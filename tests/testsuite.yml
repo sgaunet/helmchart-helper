@@ -1,0 +1,24 @@
+name: Exec testsuite
+
+testcases:
+- name: init
+  steps:
+
+- name: purge output dir
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      rm -f tests/tmp/*
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: generate chart with default values
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/myChart
+      go run cmd/*
+    assertions:
+    - result.code ShouldEqual 0
