@@ -103,6 +103,12 @@ func (a *App) GenerateChart() error {
 			return err
 		}
 	}
+	if a.opts.Ingress {
+		err = createFileFromTemplate("chartTemplate/templates/ingress.yaml", a.chartPath+string(os.PathSeparator)+"templates/ingress.yaml", a.opts)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

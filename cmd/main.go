@@ -40,7 +40,7 @@ func main() {
 	flag.BoolVar(&flagDaemonSet, "ds", false, "daemonse")
 	flag.BoolVar(&flagCronjob, "cj", false, "cronjob")
 	flag.BoolVar(&flagConfigmap, "cm", false, "configmap")
-	flag.BoolVar(&flagIngress, "ingress", false, "ingress")
+	flag.BoolVar(&flagIngress, "ing", false, "ingress")
 	flag.BoolVar(&flagVolumes, "pv", false, "volumes")
 	flag.BoolVar(&flagService, "svc", false, "service")
 
