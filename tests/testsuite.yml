@@ -31,3 +31,79 @@ testcases:
       helm lint tests/tmp/myChart
     assertions:
     - result.code ShouldEqual 0
+
+- name: generate cronjob chart
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/myChart
+      go run cmd/* -n myChart -o tests/tmp/myChart -cj
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm lint tests/tmp/myChart
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: generate daemonset chart
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/myChart
+      go run cmd/* -n myChart -o tests/tmp/myChart -ds
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm lint tests/tmp/myChart
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: generate statefulset chart
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/myChart
+      go run cmd/* -n myChart -o tests/tmp/myChart -sts
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm lint tests/tmp/myChart
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: generate deployment chart with cm/ingress/svc/volumes
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/myChart
+      go run cmd/* -n myChart -o tests/tmp/myChart -pv -svc -cm
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm lint tests/tmp/myChart
+    assertions:
+    - result.code ShouldEqual 0

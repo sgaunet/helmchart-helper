@@ -81,8 +81,9 @@ func main() {
 	app := app.NewApp(chartName, outputDir)
 	app.SetDeployment(true)
 	if flagHpa {
-		app.SetHpa(true)
+		app.SetHpa(flagHpa)
 	}
+
 	// if flagSts {
 	// 	app.SetSts()
 	// }
