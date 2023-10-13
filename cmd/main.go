@@ -31,7 +31,13 @@ func main() {
 
 	flag.StringVar(&chartName, "n", "", "Name of the chart")
 	flag.StringVar(&outputDir, "o", "", "Path of the generated chart")
+
 	flag.BoolVar(&flagDeployment, "deploy", false, "deployment")
+	flag.BoolVar(&flagConfigmap, "cm", false, "configmap")
+	flag.BoolVar(&flagIngress, "ingress", false, "ingress")
+	flag.BoolVar(&flagVolumes, "pv", false, "volumes")
+	flag.BoolVar(&flagService, "svc", false, "service")
+
 	flag.BoolVar(&flagVersion, "version", false, "Print version")
 	flag.BoolVar(&flagHelp, "help", false, "Print help")
 	flag.Parse()
