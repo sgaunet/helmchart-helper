@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
 data:
-  {{- range $k,$v := .Values.configuration }}
-  {{ $k }}: {{ $v | quote }}
-  {{- end }}
+  {{"{{"}}- range $k,$v := .Values.configuration {{"}}"}}
+  {{"{{"}} $k {{"}}"}}: {{"{{"}} $v | quote {{"}}"}}
+  {{"{{"}}- end {{"}}"}}
