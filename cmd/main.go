@@ -17,6 +17,12 @@ func printVersion() {
 
 func main() {
 	var (
+		flagDeployment bool
+		flagConfigmap  bool
+		flagService    bool
+		flagIngress    bool
+		flagVolumes    bool
+
 		flagVersion bool
 		flagHelp    bool
 		chartName   string
@@ -25,6 +31,7 @@ func main() {
 
 	flag.StringVar(&chartName, "n", "", "Name of the chart")
 	flag.StringVar(&outputDir, "o", "", "Path of the generated chart")
+	flag.BoolVar(&flagDeployment, "deploy", false, "deployment")
 	flag.BoolVar(&flagVersion, "version", false, "Print version")
 	flag.BoolVar(&flagHelp, "help", false, "Print help")
 	flag.Parse()
@@ -57,7 +64,7 @@ func main() {
 	// fmt.Println(p.ExitStatus())
 	// chartName := "myChart"
 	// chartPath := "tests/tmp/myChart"
-	app := app.NewApp(chartName, outputDir, true, true, true, true)
+	app := app.NewApp(chartName, outputDir, flagDeployment, flagConfigmap, flagService, flagIngress, flagVolumes)
 	err := app.GenerateChart()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)

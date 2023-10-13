@@ -70,15 +70,21 @@ autoscaling:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+{{ if .Configmap }}
 configuration:
   # PARAM1 -- comment for the documentation
   PARAM1: "default value"
   # PARAM2 -- comment for the documentation
   PARAM2: "default value"
+{{ end }}
+
 deploymentAnnotations: {}
 additionalEnvFrom: []
 # - configMapRef:
 #     name: common-configmap1
 
+{{ if .Volumes }}
 volumes: {}
 volumeMounts: {}
+{{ end }}

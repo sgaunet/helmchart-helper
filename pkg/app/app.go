@@ -11,16 +11,16 @@ import (
 var chartTemplate embed.FS
 
 type options struct {
-	chartName  string
-	deployment bool
-	configmap  bool
-	service    bool
-	ingress    bool
+	ChartName  string
+	Deployment bool
+	Configmap  bool
+	Service    bool
+	Ingress    bool
+	Volumes    bool
 	// hpa bool
 	// pdb bool
 	// secret bool
 	// sts bool
-	// volumes bool
 }
 
 type App struct {
@@ -28,15 +28,16 @@ type App struct {
 	opts      options
 }
 
-func NewApp(chartName string, chartPath string, deployment bool, configmap bool, service bool, ingress bool) *App {
+func NewApp(chartName string, chartPath string, deployment bool, configmap bool, service bool, ingress bool, volumes bool) *App {
 	return &App{
 		chartPath: chartPath,
 		opts: options{
-			chartName:  chartName,
-			deployment: deployment,
-			configmap:  configmap,
-			service:    service,
-			ingress:    ingress,
+			ChartName:  chartName,
+			Deployment: deployment,
+			Configmap:  configmap,
+			Service:    service,
+			Ingress:    ingress,
+			Volumes:    volumes,
 		},
 	}
 }
@@ -69,9 +70,18 @@ func (a *App) GenerateChart() error {
 	if err != nil {
 		return err
 	}
-	err = createFileFromTemplate("chartTemplate/templates/deployment.yaml", a.chartPath+string(os.PathSeparator)+"templates/deployment.yaml", a.opts)
-	if err != nil {
-		return err
+
+	if a.opts.Deployment {
+		err = createFileFromTemplate("chartTemplate/templates/deployment.yaml", a.chartPath+string(os.PathSeparator)+"templates/deployment.yaml", a.opts)
+		if err != nil {
+			return err
+		}
+	}
+	if a.opts.Service {
+		err = createFileFromTemplate("chartTemplate/templates/service.yaml", a.chartPath+string(os.PathSeparator)+"templates/service.yaml", a.opts)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

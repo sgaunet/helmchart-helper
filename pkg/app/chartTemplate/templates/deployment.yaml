@@ -41,13 +41,17 @@ spec:
           volumeMounts:
             {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
           {{"{{"}}- end {{"}}"}}
+          {{ if .Configmap }}
           envFrom:
           {{"{{"}}- range .Values.additionalEnvFrom {{"}}"}}
           - {{"{{"}}- . | toYaml | nindent 12 {{"}}"}}
           {{"{{"}}- end {{"}}"}}
           - configMapRef:
               name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
+          {{ end }}
           imagePullPolicy: {{"{{"}} .Values.image.pullPolicy {{"}}"}}
+
+          {{ if .Service }}
           ports:
             - name: http
               containerPort: {{"{{"}} .Values.service.port {{"}}"}}
@@ -60,6 +64,7 @@ spec:
             httpGet:
               path: /
               port: http
+          {{ end }}
           resources:
             {{"{{"}}- toYaml .Values.resources | nindent 12 {{"}}"}}
       {{"{{"}}- with .Values.nodeSelector {{"}}"}}
@@ -74,7 +79,10 @@ spec:
       tolerations:
         {{"{{"}}- toYaml . | nindent 8 {{"}}"}}
       {{"{{"}}- end {{"}}"}}
+
+      {{ if .Volumes }}
       {{"{{"}}- with .Values.volumes {{"}}"}}
       volumes:
         {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
       {{"{{"}}- end {{"}}"}}
+      {{ end }}
