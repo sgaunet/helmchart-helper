@@ -73,9 +73,15 @@ func (a *App) GenerateChart() error {
 	if err != nil {
 		return err
 	}
-	err = os.MkdirAll(a.chartPath+string(os.PathSeparator)+"templates/tests", 0755)
-	if err != nil {
-		return err
+	if a.opts.Service {
+		err = os.MkdirAll(a.chartPath+string(os.PathSeparator)+"templates/tests", 0755)
+		if err != nil {
+			return err
+		}
+		err = createFileFromTemplate("chartTemplate/templates/tests/test-connection.yaml", a.chartPath+string(os.PathSeparator)+"templates/tests/test-connection.yaml", a.opts)
+		if err != nil {
+			return err
+		}
 	}
 
 	// create files
