@@ -1,0 +1,61 @@
+---
+# project_name: helmchart-helper
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod download
+    # you may remove this if you don't need go generate
+    #- go generate ./...
+builds:
+  - env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -X main.version={{.Version}}
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - "6"
+      - "7"
+    dir: cmd
+    id: helmchart-helper
+    binary: helmchart-helper
+
+archives:
+  - name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    format: binary
+
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-snapshot"
+
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+brews:
+  - homepage: 'https://github.com/sgaunet/homebrew-tools'
+    folder: Formula
+    # Custom install script for brew.
+    #
+    # Template: allowed
+    # Default: 'bin.install "BinaryName"'
+    install: |
+      bin.install "helmchart-helper"
+      # bash_completion.install "completions/foo.bash" => "foo"
+      # ...
+    commit_author:
+      name: sgaunet
+      email: sgaunet@gmail.com
+    repository:
+      owner: sgaunet
+      name: homebrew-tools
