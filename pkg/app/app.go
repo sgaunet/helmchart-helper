@@ -57,6 +57,10 @@ func (a *App) GenerateChart() error {
 	if err != nil {
 		return err
 	}
+	err = copyFileFromTemplate("chartTemplate/helmignore", a.chartPath+string(os.PathSeparator)+".helmignore")
+	if err != nil {
+		return err
+	}
 	err = createFileFromTemplate("chartTemplate/Chart.yaml", a.chartPath+string(os.PathSeparator)+"Chart.yaml", a.opts)
 	if err != nil {
 		return err
