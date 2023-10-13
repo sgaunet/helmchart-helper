@@ -119,16 +119,6 @@ func createFileFromTemplate(templatePath string, outputPath string, opts options
 	}
 	defer outputFile.Close()
 
-	// list every files of chartTemplate
-	files, err := chartTemplate.ReadDir("chartTemplate")
-	if err != nil {
-		fmt.Println("Error reading template directory:", err)
-		return err
-	}
-	for _, file := range files {
-		fmt.Println(file.Name())
-	}
-
 	tmpl, err := template.ParseFS(chartTemplate, templatePath)
 	if err != nil {
 		fmt.Println("Error parsing template:", err)
@@ -143,12 +133,6 @@ func createFileFromTemplate(templatePath string, outputPath string, opts options
 }
 
 func copyFileFromTemplate(templatePath string, outputPath string) error {
-	// outputFile, err := os.Create(outputPath)
-	// if err != nil {
-	// 	return err
-	// }
-	// defer outputFile.Close()
-
 	// copy file templatePath to outputFile from chartTemplate FS
 	content, err := chartTemplate.ReadFile(templatePath)
 	if err != nil {
