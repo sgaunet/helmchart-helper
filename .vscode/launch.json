@@ -9,11 +9,11 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/",
+            "program": "${workspaceFolder}/cmd",
             // "env": {
             //     "KUBECONFIG": "...."
             // },
-            "args": ["-i","${workspaceFolder}/tests/inputs/input.txt","-o","${workspaceFolder}" ]
+            "args": ["-o","${workspaceFolder}/tests/tmp/myChart","-n","myChart" ]
         }
     ]
 }

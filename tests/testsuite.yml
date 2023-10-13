@@ -22,3 +22,12 @@ testcases:
       go run cmd/* -n myChart -o tests/tmp/myChart
     assertions:
     - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm lint tests/tmp/myChart
+    assertions:
+    - result.code ShouldEqual 0

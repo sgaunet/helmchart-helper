@@ -42,7 +42,30 @@ func NewApp(chartName string, chartPath string, deployment bool, configmap bool,
 }
 
 func (a *App) GenerateChart() error {
-	err := createFileFromTemplate("chartTemplate/README.md", a.chartPath+string(os.PathSeparator)+"Chart.yaml", a.opts)
+	// create directories
+	err := os.MkdirAll(a.chartPath+string(os.PathSeparator)+"templates", 0755)
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(a.chartPath+string(os.PathSeparator)+"templates/tests", 0755)
+	if err != nil {
+		return err
+	}
+
+	// create files
+	err = copyFileFromTemplate("chartTemplate/templates/helpers.tpl", a.chartPath+string(os.PathSeparator)+"templates/_helpers.tpl")
+	if err != nil {
+		return err
+	}
+	err = createFileFromTemplate("chartTemplate/Chart.yaml", a.chartPath+string(os.PathSeparator)+"Chart.yaml", a.opts)
+	if err != nil {
+		return err
+	}
+	err = createFileFromTemplate("chartTemplate/values.yaml", a.chartPath+string(os.PathSeparator)+"values.yaml", a.opts)
+	if err != nil {
+		return err
+	}
+	err = createFileFromTemplate("chartTemplate/templates/deployment.yaml", a.chartPath+string(os.PathSeparator)+"templates/deployment.yaml", a.opts)
 	if err != nil {
 		return err
 	}
@@ -77,4 +100,21 @@ func createFileFromTemplate(templatePath string, outputPath string, opts options
 		return err
 	}
 	return nil
+}
+
+func copyFileFromTemplate(templatePath string, outputPath string) error {
+	// outputFile, err := os.Create(outputPath)
+	// if err != nil {
+	// 	return err
+	// }
+	// defer outputFile.Close()
+
+	// copy file templatePath to outputFile from chartTemplate FS
+	content, err := chartTemplate.ReadFile(templatePath)
+	if err != nil {
+		fmt.Println("Error opening template:", err)
+		return err
+	}
+	err = os.WriteFile(outputPath, content, 0644)
+	return err
 }
