@@ -33,7 +33,11 @@ spec:
       imagePullSecrets:
         {{"{{"}}- toYaml . | nindent 8 {{"}}"}}
       {{"{{"}}- end {{"}}"}}
+      {{ if .ServiceAccount }}
       serviceAccountName: {{"{{"}} include "exemple.serviceAccountName" . {{"}}"}}
+      {{ else }}
+      automountServiceAccountToken: false
+      {{ end }}
       securityContext:
         {{"{{"}}- toYaml .Values.podSecurityContext | nindent 8 {{"}}"}}
       containers:

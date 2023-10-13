@@ -17,14 +17,15 @@ func printVersion() {
 
 func main() {
 	var (
-		flagHpa       bool
-		flagSts       bool
-		flagDaemonSet bool
-		flagCronjob   bool
-		flagConfigmap bool
-		flagService   bool
-		flagIngress   bool
-		flagVolumes   bool
+		flagHpa            bool
+		flagSts            bool
+		flagDaemonSet      bool
+		flagCronjob        bool
+		flagConfigmap      bool
+		flagService        bool
+		flagServiceAccount bool
+		flagIngress        bool
+		flagVolumes        bool
 
 		flagVersion bool
 		flagHelp    bool
@@ -43,6 +44,7 @@ func main() {
 	flag.BoolVar(&flagIngress, "ing", false, "ingress")
 	flag.BoolVar(&flagVolumes, "pv", false, "volumes")
 	flag.BoolVar(&flagService, "svc", false, "service")
+	flag.BoolVar(&flagServiceAccount, "sa", false, "serviceaccount")
 
 	flag.BoolVar(&flagVersion, "version", false, "Print version")
 	flag.BoolVar(&flagHelp, "help", false, "Print help")
@@ -97,6 +99,7 @@ func main() {
 	app.SetIngress(flagIngress)
 	app.SetVolumes(flagVolumes)
 	app.SetService(flagService)
+	app.SetServiceAccount(flagServiceAccount)
 
 	err := app.GenerateChart()
 	if err != nil {

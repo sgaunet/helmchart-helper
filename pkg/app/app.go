@@ -11,13 +11,14 @@ import (
 var chartTemplate embed.FS
 
 type options struct {
-	ChartName  string
-	Deployment bool
-	Configmap  bool
-	Service    bool
-	Ingress    bool
-	Volumes    bool
-	Hpa        bool
+	ChartName      string
+	Deployment     bool
+	Configmap      bool
+	Service        bool
+	Ingress        bool
+	Volumes        bool
+	Hpa            bool
+	ServiceAccount bool
 	// pdb bool
 	// secret bool
 	// sts bool
@@ -60,6 +61,10 @@ func (a *App) SetVolumes(v bool) {
 
 func (a *App) SetHpa(v bool) {
 	a.opts.Hpa = v
+}
+
+func (a *App) SetServiceAccount(v bool) {
+	a.opts.ServiceAccount = v
 }
 
 func (a *App) GenerateChart() error {
@@ -105,6 +110,18 @@ func (a *App) GenerateChart() error {
 	}
 	if a.opts.Ingress {
 		err = createFileFromTemplate("chartTemplate/templates/ingress.yaml", a.chartPath+string(os.PathSeparator)+"templates/ingress.yaml", a.opts)
+		if err != nil {
+			return err
+		}
+	}
+	if a.opts.Configmap {
+		err = createFileFromTemplate("chartTemplate/templates/configmap.yaml", a.chartPath+string(os.PathSeparator)+"templates/configmap.yaml", a.opts)
+		if err != nil {
+			return err
+		}
+	}
+	if a.opts.ServiceAccount {
+		err = createFileFromTemplate("chartTemplate/templates/serviceaccount.yaml", a.chartPath+string(os.PathSeparator)+"templates/serviceaccount.yaml", a.opts)
 		if err != nil {
 			return err
 		}

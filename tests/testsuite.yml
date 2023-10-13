@@ -95,7 +95,7 @@ testcases:
     script: |
       cd {{.venom.testsuite.workdir}}/..
       mkdir -p tests/tmp/myChart
-      go run cmd/* -n myChart -o tests/tmp/myChart -pv -svc -cm -ing
+      go run cmd/* -n myChart -o tests/tmp/myChart -pv -svc -cm -ing -sa
     assertions:
     - result.code ShouldEqual 0
 
