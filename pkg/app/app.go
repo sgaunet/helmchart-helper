@@ -17,7 +17,7 @@ type options struct {
 	Service    bool
 	Ingress    bool
 	Volumes    bool
-	// hpa bool
+	Hpa        bool
 	// pdb bool
 	// secret bool
 	// sts bool
@@ -28,18 +28,38 @@ type App struct {
 	opts      options
 }
 
-func NewApp(chartName string, chartPath string, deployment bool, configmap bool, service bool, ingress bool, volumes bool) *App {
+func NewApp(chartName string, chartPath string) *App {
 	return &App{
 		chartPath: chartPath,
 		opts: options{
-			ChartName:  chartName,
-			Deployment: deployment,
-			Configmap:  configmap,
-			Service:    service,
-			Ingress:    ingress,
-			Volumes:    volumes,
+			ChartName: chartName,
 		},
 	}
+}
+
+func (a *App) SetDeployment(v bool) {
+	a.opts.Deployment = v
+}
+
+func (a *App) SetConfigmap(v bool) {
+	a.opts.Configmap = v
+}
+
+func (a *App) SetService(v bool) {
+	a.opts.Service = v
+}
+
+func (a *App) SetIngress(v bool) {
+	a.opts.Ingress = v
+
+}
+
+func (a *App) SetVolumes(v bool) {
+	a.opts.Volumes = v
+}
+
+func (a *App) SetHpa(v bool) {
+	a.opts.Hpa = v
 }
 
 func (a *App) GenerateChart() error {

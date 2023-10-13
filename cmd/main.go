@@ -17,11 +17,14 @@ func printVersion() {
 
 func main() {
 	var (
-		flagDeployment bool
-		flagConfigmap  bool
-		flagService    bool
-		flagIngress    bool
-		flagVolumes    bool
+		flagHpa       bool
+		flagSts       bool
+		flagDaemonSet bool
+		flagCronjob   bool
+		flagConfigmap bool
+		flagService   bool
+		flagIngress   bool
+		flagVolumes   bool
 
 		flagVersion bool
 		flagHelp    bool
@@ -32,7 +35,10 @@ func main() {
 	flag.StringVar(&chartName, "n", "", "Name of the chart")
 	flag.StringVar(&outputDir, "o", "", "Path of the generated chart")
 
-	flag.BoolVar(&flagDeployment, "deploy", false, "deployment")
+	flag.BoolVar(&flagHpa, "hpa", false, "hpa")
+	flag.BoolVar(&flagSts, "sts", false, "statefulset")
+	flag.BoolVar(&flagDaemonSet, "ds", false, "daemonse")
+	flag.BoolVar(&flagCronjob, "cj", false, "cronjob")
 	flag.BoolVar(&flagConfigmap, "cm", false, "configmap")
 	flag.BoolVar(&flagIngress, "ingress", false, "ingress")
 	flag.BoolVar(&flagVolumes, "pv", false, "volumes")
@@ -52,6 +58,8 @@ func main() {
 		os.Exit(0)
 	}
 
+	// TODO: check exclusion parameters between sts ds cj hpa
+
 	// TODO: check if helm is installed
 	if len(chartName) == 0 {
 		fmt.Fprintf(os.Stderr, "Error: chart name is required\n")
@@ -70,7 +78,25 @@ func main() {
 	// fmt.Println(p.ExitStatus())
 	// chartName := "myChart"
 	// chartPath := "tests/tmp/myChart"
-	app := app.NewApp(chartName, outputDir, flagDeployment, flagConfigmap, flagService, flagIngress, flagVolumes)
+	app := app.NewApp(chartName, outputDir)
+	app.SetDeployment(true)
+	if flagHpa {
+		app.SetHpa(true)
+	}
+	// if flagSts {
+	// 	app.SetSts()
+	// }
+	// if flagDaemonSet {
+	// 	app.SetDaemonSet()
+	// }
+	// if flagCronjob {
+	// 	app.SetCronjob()
+	// }
+	app.SetConfigmap(flagConfigmap)
+	app.SetIngress(flagIngress)
+	app.SetVolumes(flagVolumes)
+	app.SetService(flagService)
+
 	err := app.GenerateChart()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)

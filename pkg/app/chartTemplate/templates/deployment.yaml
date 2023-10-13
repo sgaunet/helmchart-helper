@@ -10,9 +10,13 @@ metadata:
     {{"{{"}}- end {{"}}"}}
 
 spec:
+  {{ if .Hpa }}
   {{"{{"}}- if not .Values.autoscaling.enabled {{"}}"}}
   replicas: {{"{{"}} .Values.replicaCount {{"}}"}}
   {{"{{"}}- end {{"}}"}}
+  {{ else }}
+  replicas: {{"{{"}} .Values.replicaCount {{"}}"}}
+  {{ end }}
   selector:
     matchLabels:
       {{"{{"}}- include "exemple.selectorLabels" . | nindent 6 {{"}}"}}
