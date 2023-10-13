@@ -9,7 +9,7 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      rm -f tests/tmp/*
+      rm -rf tests/tmp/*
     assertions:
     - result.code ShouldEqual 0
 
@@ -19,6 +19,6 @@ testcases:
     script: |
       cd {{.venom.testsuite.workdir}}/..
       mkdir -p tests/tmp/myChart
-      go run cmd/*
+      go run cmd/* -n myChart -o tests/tmp/myChart
     assertions:
     - result.code ShouldEqual 0
