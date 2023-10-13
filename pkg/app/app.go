@@ -132,6 +132,22 @@ func (a *App) GenerateChart() error {
 			return err
 		}
 	}
+	err = copyFileFromTemplate("chartTemplate/templates/NOTES-DEFAULT.txt", a.chartPath+string(os.PathSeparator)+"templates/NOTES.txt")
+	if err != nil {
+		return err
+	}
+	if a.opts.Ingress {
+		err = appendToFile("chartTemplate/templates/NOTES-INGRESS.txt", a.chartPath+string(os.PathSeparator)+"templates/NOTES.txt")
+		if err != nil {
+			return err
+		}
+	}
+	if a.opts.Service {
+		err = appendToFile("chartTemplate/templates/NOTES-SERVICE.txt", a.chartPath+string(os.PathSeparator)+"templates/NOTES.txt")
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -164,4 +180,22 @@ func copyFileFromTemplate(templatePath string, outputPath string) error {
 	}
 	err = os.WriteFile(outputPath, content, 0644)
 	return err
+}
+
+func appendToFile(templatePath string, outputPath string) error {
+	content, err := chartTemplate.ReadFile(templatePath)
+	if err != nil {
+		fmt.Println("Error opening template:", err)
+		return err
+	}
+
+	f, err := os.OpenFile(outputPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	if _, err := f.WriteString(string(content)); err != nil {
+		return err
+	}
+	return nil
 }

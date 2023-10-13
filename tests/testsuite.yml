@@ -89,13 +89,32 @@ testcases:
     assertions:
     - result.code ShouldEqual 0
 
+- name: generate deployment chart with cm/svc/volumes
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/myChart
+      go run cmd/* -n myChart -o tests/tmp/myChart -pv -svc -cm -sa
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm lint tests/tmp/myChart
+    assertions:
+    - result.code ShouldEqual 0
+
 - name: generate deployment chart with cm/ingress/svc/volumes
   steps:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
       mkdir -p tests/tmp/myChart
-      go run cmd/* -n myChart -o tests/tmp/myChart -pv -svc -cm -ing -sa
+      go run cmd/* -n myChart -o tests/tmp/myChart -pv -svc -cm -ing
     assertions:
     - result.code ShouldEqual 0
 
