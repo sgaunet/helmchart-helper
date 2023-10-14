@@ -4,6 +4,8 @@ import (
 	"embed"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 	"text/template"
 )
 
@@ -148,7 +150,9 @@ func (a *App) GenerateChart() error {
 			return err
 		}
 	}
-	return nil
+	// replace example with chart name
+	err = a.replaceExampleInAllFiles(a.chartPath)
+	return err
 }
 
 func createFileFromTemplate(templatePath string, outputPath string, opts options) error {
@@ -198,4 +202,28 @@ func appendToFile(templatePath string, outputPath string) error {
 		return err
 	}
 	return nil
+}
+
+func (a *App) replaceExampleInAllFiles(path string) error {
+	// list all files in chartPath
+	err := filepath.Walk(path, func(p string, info os.FileInfo, erR error) error {
+		// fmt.Println(p)
+		// fmt.Println(info.Name())
+		if erR != nil {
+			return erR
+		}
+		if info.IsDir() {
+			// return a.replaceExampleInAllFiles(p + string(os.PathSeparator) + info.Name())
+			return nil
+		}
+		read, err := os.ReadFile(p)
+		if err != nil {
+			return err
+		}
+		// fmt.Println(path)
+		newContents := strings.Replace(string(read), "exemple", a.opts.ChartName, -1)
+		err = os.WriteFile(p, []byte(newContents), 0)
+		return err
+	})
+	return err
 }
