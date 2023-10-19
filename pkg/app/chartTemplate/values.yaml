@@ -1,16 +1,28 @@
-# Default values for exemple.
-# This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# -- number of replicas
 replicaCount: 1
+
+# -- additional deployment labels (will be merged with the default labels)
+deploymentLabels: {}
+# deploymentLabels:
+#   exposed: "true"
+
+# -- deployment annotations
+deploymentAnnotations: {}
+
 image:
+  # -- image repository
   repository: nginx
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # -- Overrides the image tag whose default is the chart appVersion.
   tag: ""
+
+# -- image pull secrets
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+{{ if .ServiceAccount }}
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -19,6 +31,7 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+{{ end }}
 podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
@@ -79,13 +92,13 @@ affinity: {}
 
 {{ if .Configmap }}
 configuration:
-  # PARAM1 -- comment for the documentation
+  # -- comment for the documentation
   PARAM1: "default value"
-  # PARAM2 -- comment for the documentation
+  # -- comment for the documentation
   PARAM2: "default value"
 {{ end }}
 
-deploymentAnnotations: {}
+# -- additional configmap or secret. 
 additionalEnvFrom: []
 # - configMapRef:
 #     name: common-configmap1

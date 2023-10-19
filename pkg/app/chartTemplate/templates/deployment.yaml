@@ -4,6 +4,9 @@ metadata:
   name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
   labels:
     {{"{{"}}- include "exemple.labels" . | nindent 4 {{"}}"}}
+    {{"{{"}}- with .Values.deploymentLabels -{{"}}"}}
+      {{"{{"}}- toYaml . | nindent 4 {{"}}"}}
+    {{"{{"}}- end {{"}}"}}
   annotations:
     {{"{{"}}- with .Values.deploymentAnnotations -{{"}}"}}
       {{"{{"}}- toYaml . | nindent 4 {{"}}"}}
@@ -14,9 +17,9 @@ spec:
   {{"{{"}}- if not .Values.autoscaling.enabled {{"}}"}}
   replicas: {{"{{"}} .Values.replicaCount {{"}}"}}
   {{"{{"}}- end {{"}}"}}
-  {{ else }}
+  {{ else -}}
   replicas: {{"{{"}} .Values.replicaCount {{"}}"}}
-  {{ end }}
+  {{ end -}}
   selector:
     matchLabels:
       {{"{{"}}- include "exemple.selectorLabels" . | nindent 6 {{"}}"}}
