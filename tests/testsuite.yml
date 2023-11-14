@@ -132,3 +132,23 @@ testcases:
       helm lint tests/tmp/myChart-pv-svc-cm-ing
     assertions:
     - result.code ShouldEqual 0
+
+- name: generate deployment chart with ds/cm/svc/volumes
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/myChart-ds-pv-svc-cm
+      go run cmd/* -n myChart -o tests/tmp/myChart-ds-pv-svc-cm -ds -pv -svc -cm
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm-docs -c tests/tmp/myChart-ds-pv-svc-cm
+      helm lint tests/tmp/myChart-ds-pv-svc-cm
+    assertions:
+    - result.code ShouldEqual 0

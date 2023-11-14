@@ -15,6 +15,7 @@ var chartTemplate embed.FS
 type options struct {
 	ChartName      string
 	Deployment     bool
+	DaemonSet      bool
 	Configmap      bool
 	Service        bool
 	Ingress        bool
@@ -42,6 +43,10 @@ func NewApp(chartName string, chartPath string) *App {
 
 func (a *App) SetDeployment(v bool) {
 	a.opts.Deployment = v
+}
+
+func (a *App) SetDaemonSet(v bool) {
+	a.opts.DaemonSet = v
 }
 
 func (a *App) SetConfigmap(v bool) {
@@ -106,6 +111,12 @@ func (a *App) GenerateChart() error {
 
 	if a.opts.Deployment {
 		err = createFileFromTemplate("chartTemplate/templates/deployment.yaml", a.chartPath+string(os.PathSeparator)+"templates/deployment.yaml", a.opts)
+		if err != nil {
+			return err
+		}
+	}
+	if a.opts.DaemonSet {
+		err = createFileFromTemplate("chartTemplate/templates/daemonset.yaml", a.chartPath+string(os.PathSeparator)+"templates/daemonset.yaml", a.opts)
 		if err != nil {
 			return err
 		}

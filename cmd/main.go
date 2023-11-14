@@ -89,9 +89,9 @@ func main() {
 	// if flagSts {
 	// 	app.SetSts()
 	// }
-	// if flagDaemonSet {
-	// 	app.SetDaemonSet()
-	// }
+	if flagDaemonSet {
+		app.SetDaemonSet(true)
+	}
 	// if flagCronjob {
 	// 	app.SetCronjob()
 	// }
