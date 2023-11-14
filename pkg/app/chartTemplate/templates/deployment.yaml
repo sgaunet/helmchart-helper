@@ -39,11 +39,11 @@ spec:
       imagePullSecrets:
         {{"{{"}}- toYaml . | nindent 8 {{"}}"}}
       {{"{{"}}- end {{"}}"}}
-      {{ if .ServiceAccount }}
+      {{- if .ServiceAccount }}
       serviceAccountName: {{"{{"}} include "exemple.serviceAccountName" . {{"}}"}}
-      {{ else }}
+      {{- else }}
       automountServiceAccountToken: false
-      {{ end }}
+      {{- end }}
       securityContext:
         {{"{{"}}- toYaml .Values.podSecurityContext | nindent 8 {{"}}"}}
       containers:
@@ -57,17 +57,16 @@ spec:
             {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
           {{"{{"}}- end {{"}}"}}
           {{- end }}
-          {{ if .Configmap }}
+          {{- if .Configmap }}
           envFrom:
           {{"{{"}}- range .Values.additionalEnvFrom {{"}}"}}
           - {{"{{"}}- . | toYaml | nindent 12 {{"}}"}}
           {{"{{"}}- end {{"}}"}}
           - configMapRef:
               name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
-          {{ end }}
+          {{- end }}
           imagePullPolicy: {{"{{"}} .Values.image.pullPolicy {{"}}"}}
-
-          {{ if .Service }}
+          {{- if .Service }}
           ports:
             - name: http
               containerPort: {{"{{"}} .Values.service.port {{"}}"}}
@@ -80,7 +79,7 @@ spec:
             httpGet:
               path: /
               port: http
-          {{ end }}
+          {{- end }}
           resources:
             {{"{{"}}- toYaml .Values.resources | nindent 12 {{"}}"}}
       {{"{{"}}- with .Values.nodeSelector {{"}}"}}
@@ -95,10 +94,9 @@ spec:
       tolerations:
         {{"{{"}}- toYaml . | nindent 8 {{"}}"}}
       {{"{{"}}- end {{"}}"}}
-
-      {{ if .Volumes }}
+      {{- if .Volumes }}
       {{"{{"}}- with .Values.volumes {{"}}"}}
       volumes:
         {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
       {{"{{"}}- end {{"}}"}}
-      {{ end }}
+      {{- end }}

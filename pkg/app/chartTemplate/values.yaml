@@ -1,8 +1,6 @@
 # Declare variables to be passed into your templates.
-
 # -- number of replicas
 replicaCount: 1
-
 # -- additional deployment labels (will be merged with the default labels)
 deploymentLabels: {}
 # deploymentLabels:
@@ -10,7 +8,6 @@ deploymentLabels: {}
 
 # -- deployment annotations
 deploymentAnnotations: {}
-
 image:
   # -- image repository
   repository: nginx
@@ -22,7 +19,7 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-{{ if .ServiceAccount }}
+{{- if .ServiceAccount }}
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -31,7 +28,7 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
-{{ end }}
+{{- end }}
 podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
@@ -44,13 +41,13 @@ securityContext: {}
 # runAsNonRoot: true
 # runAsUser: 1000
 
-{{ if .Service }}
+{{- if .Service }}
 service:
   type: ClusterIP
   port: 80
-{{ end }}
+{{- end }}
 
-{{ if .Ingress }}
+{{- if .Ingress }}
 ingress:
   enabled: false
   className: ""
@@ -66,7 +63,7 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-{{ end }}
+{{- end }}
 resources: {}
 # We usually recommend not to specify default resources and to leave this as a conscious
 # choice for the user. This also increases chances charts run on environments with little
@@ -78,32 +75,31 @@ resources: {}
 # requests:
 #   cpu: 100m
 #   memory: 128Mi
-{{ if .Hpa }}
+{{- if .Hpa }}
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-{{ end }}
+{{- end }}
 nodeSelector: {}
 tolerations: []
 affinity: {}
 
-{{ if .Configmap }}
+{{- if .Configmap }}
 configuration:
   # -- comment for the documentation
   PARAM1: "default value"
   # -- comment for the documentation
   PARAM2: "default value"
-{{ end }}
+{{- end }}
 
 # -- additional configmap or secret. 
 additionalEnvFrom: []
 # - configMapRef:
 #     name: common-configmap1
-
-{{ if .Volumes }}
+{{- if .Volumes }}
 volumes: {}
 volumeMounts: {}
-{{ end }}
+{{- end }}
