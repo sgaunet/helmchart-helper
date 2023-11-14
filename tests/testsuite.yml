@@ -18,7 +18,6 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      rm -rf tests/tmp/myChart
       mkdir -p tests/tmp/myChart
       go run cmd/* -n myChart -o tests/tmp/myChart
     assertions:
@@ -39,9 +38,8 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      rm -rf tests/tmp/myChart
-      mkdir -p tests/tmp/myChart
-      go run cmd/* -n myChart -o tests/tmp/myChart -cj
+      mkdir -p tests/tmp/myChart-cj
+      go run cmd/* -n myChart -o tests/tmp/myChart-cj -cj
     assertions:
     - result.code ShouldEqual 0
 
@@ -50,8 +48,8 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      helm-docs -c tests/tmp/myChart
-      helm lint tests/tmp/myChart
+      helm-docs -c tests/tmp/myChart-cj
+      helm lint tests/tmp/myChart-cj
     assertions:
     - result.code ShouldEqual 0
 
@@ -60,9 +58,8 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      rm -rf tests/tmp/myChart
-      mkdir -p tests/tmp/myChart
-      go run cmd/* -n myChart -o tests/tmp/myChart -ds
+      mkdir -p tests/tmp/myChart-ds
+      go run cmd/* -n myChart -o tests/tmp/myChart-ds -ds
     assertions:
     - result.code ShouldEqual 0
 
@@ -71,8 +68,8 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      helm-docs -c tests/tmp/myChart
-      helm lint tests/tmp/myChart
+      helm-docs -c tests/tmp/myChart-ds
+      helm lint tests/tmp/myChart-ds
     assertions:
     - result.code ShouldEqual 0
 
@@ -81,9 +78,8 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      rm -rf tests/tmp/myChart
-      mkdir -p tests/tmp/myChart
-      go run cmd/* -n myChart -o tests/tmp/myChart -sts
+      mkdir -p tests/tmp/myChart-sts
+      go run cmd/* -n myChart -o tests/tmp/myChart-sts -sts
     assertions:
     - result.code ShouldEqual 0
 
@@ -92,8 +88,8 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      helm-docs -c tests/tmp/myChart
-      helm lint tests/tmp/myChart
+      helm-docs -c tests/tmp/myChart-sts
+      helm lint tests/tmp/myChart-sts
     assertions:
     - result.code ShouldEqual 0
 
@@ -102,9 +98,8 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      rm -rf tests/tmp/myChart
-      mkdir -p tests/tmp/myChart
-      go run cmd/* -n myChart -o tests/tmp/myChart -pv -svc -cm -sa
+      mkdir -p tests/tmp/myChart-pv-svc-cm-sa
+      go run cmd/* -n myChart -o tests/tmp/myChart-pv-svc-cm-sa -pv -svc -cm -sa
     assertions:
     - result.code ShouldEqual 0
 
@@ -113,8 +108,8 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      helm-docs -c tests/tmp/myChart
-      helm lint tests/tmp/myChart
+      helm-docs -c tests/tmp/myChart-pv-svc-cm-sa
+      helm lint tests/tmp/myChart-pv-svc-cm-sa
     assertions:
     - result.code ShouldEqual 0
 
@@ -123,9 +118,8 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      rm -rf tests/tmp/myChart
-      mkdir -p tests/tmp/myChart
-      go run cmd/* -n myChart -o tests/tmp/myChart -pv -svc -cm -ing
+      mkdir -p tests/tmp/myChart-pv-svc-cm-ing
+      go run cmd/* -n myChart -o tests/tmp/myChart-pv-svc-cm-ing -pv -svc -cm -ing
     assertions:
     - result.code ShouldEqual 0
 
@@ -134,7 +128,7 @@ testcases:
   - type: exec
     script: |
       cd {{.venom.testsuite.workdir}}/..
-      helm-docs -c tests/tmp/myChart
-      helm lint tests/tmp/myChart
+      helm-docs -c tests/tmp/myChart-pv-svc-cm-ing
+      helm lint tests/tmp/myChart-pv-svc-cm-ing
     assertions:
     - result.code ShouldEqual 0
