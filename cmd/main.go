@@ -19,6 +19,7 @@ func main() {
 	var (
 		flagHpa            bool
 		flagSts            bool
+		flagDeployment     bool
 		flagDaemonSet      bool
 		flagCronjob        bool
 		flagConfigmap      bool
@@ -40,6 +41,7 @@ func main() {
 	flag.BoolVar(&flagSts, "sts", false, "statefulset")
 	flag.BoolVar(&flagDaemonSet, "ds", false, "daemonse")
 	flag.BoolVar(&flagCronjob, "cj", false, "cronjob")
+	flag.BoolVar(&flagDeployment, "deploy", false, "deployment")
 	flag.BoolVar(&flagConfigmap, "cm", false, "configmap")
 	flag.BoolVar(&flagIngress, "ing", false, "ingress")
 	flag.BoolVar(&flagVolumes, "pv", false, "volumes")
@@ -60,8 +62,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	// TODO: check exclusion parameters between sts ds cj hpa
-
 	// TODO: check if helm is installed
 	if len(chartName) == 0 {
 		fmt.Fprintf(os.Stderr, "Error: chart name is required\n")
@@ -81,7 +81,11 @@ func main() {
 	// chartName := "myChart"
 	// chartPath := "tests/tmp/myChart"
 	app := app.NewApp(chartName, outputDir)
-	app.SetDeployment(true)
+
+	if flagDeployment {
+		app.SetDeployment(true)
+	}
+
 	if flagHpa {
 		app.SetHpa(flagHpa)
 	}
@@ -92,9 +96,11 @@ func main() {
 	if flagDaemonSet {
 		app.SetDaemonSet(true)
 	}
-	// if flagCronjob {
-	// 	app.SetCronjob()
-	// }
+
+	if flagCronjob {
+		app.SetCronjob(true)
+	}
+
 	app.SetConfigmap(flagConfigmap)
 	app.SetIngress(flagIngress)
 	app.SetVolumes(flagVolumes)

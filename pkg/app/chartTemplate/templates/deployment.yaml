@@ -4,11 +4,11 @@ metadata:
   name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
   labels:
     {{"{{"}}- include "exemple.labels" . | nindent 4 {{"}}"}}
-    {{"{{"}}- with .Values.deploymentLabels -{{"}}"}}
+    {{"{{"}}- with .Values.additionalLabels -{{"}}"}}
       {{"{{"}}- toYaml . | nindent 4 {{"}}"}}
     {{"{{"}}- end {{"}}"}}
   annotations:
-    {{"{{"}}- with .Values.deploymentAnnotations -{{"}}"}}
+    {{"{{"}}- with .Values.additionalAnnotations -{{"}}"}}
       {{"{{"}}- toYaml . | nindent 4 {{"}}"}}
     {{"{{"}}- end {{"}}"}}
 

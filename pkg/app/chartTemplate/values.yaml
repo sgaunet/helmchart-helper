@@ -2,12 +2,13 @@
 # -- number of replicas
 replicaCount: 1
 # -- additional deployment labels (will be merged with the default labels)
-deploymentLabels: {}
-# deploymentLabels:
+additionalLabels: {}
+# additionalLabels:
 #   exposed: "true"
 
-# -- deployment annotations
-deploymentAnnotations: {}
+# -- additional annotations
+additionalAnnotations: {}
+
 image:
   # -- image repository
   repository: nginx

@@ -15,6 +15,8 @@ var chartTemplate embed.FS
 type options struct {
 	ChartName      string
 	Deployment     bool
+	Cronjob        bool
+	StatefulSet    bool
 	DaemonSet      bool
 	Configmap      bool
 	Service        bool
@@ -43,6 +45,10 @@ func NewApp(chartName string, chartPath string) *App {
 
 func (a *App) SetDeployment(v bool) {
 	a.opts.Deployment = v
+}
+
+func (a *App) SetCronjob(v bool) {
+	a.opts.Cronjob = v
 }
 
 func (a *App) SetDaemonSet(v bool) {
@@ -109,6 +115,12 @@ func (a *App) GenerateChart() error {
 		return err
 	}
 
+	if a.opts.Cronjob {
+		err = createFileFromTemplate("chartTemplate/templates/cronjob.yaml", a.chartPath+string(os.PathSeparator)+"templates/cronjob.yaml", a.opts)
+		if err != nil {
+			return err
+		}
+	}
 	if a.opts.Deployment {
 		err = createFileFromTemplate("chartTemplate/templates/deployment.yaml", a.chartPath+string(os.PathSeparator)+"templates/deployment.yaml", a.opts)
 		if err != nil {
@@ -145,7 +157,11 @@ func (a *App) GenerateChart() error {
 			return err
 		}
 	}
-	err = copyFileFromTemplate("chartTemplate/templates/NOTES-DEFAULT.txt", a.chartPath+string(os.PathSeparator)+"templates/NOTES.txt")
+	err = createFileFromTemplate("chartTemplate/templates/NOTES-objects-created.txt", a.chartPath+string(os.PathSeparator)+"templates/NOTES.txt", a.opts)
+	if err != nil {
+		return err
+	}
+	err = appendToFile("chartTemplate/templates/NOTES-DEFAULT.txt", a.chartPath+string(os.PathSeparator)+"templates/NOTES.txt")
 	if err != nil {
 		return err
 	}
