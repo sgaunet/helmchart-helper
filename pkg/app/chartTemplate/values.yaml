@@ -104,3 +104,19 @@ additionalEnvFrom: []
 volumes: {}
 volumeMounts: {}
 {{- end }}
+{{- if .Cronjob }}
+# -- cronjob schedule
+schedule: "*/1 * * * *"
+# -- cronjob concurrencyPolicy
+concurrencyPolicy: "Allow"
+# -- cronjob failedJobsHistoryLimit
+failedJobsHistoryLimit: 10
+# -- cronjob successfulJobsHistoryLimit
+successfulJobsHistoryLimit: 10
+# -- cronjob suspend
+suspend: False
+# -- cronjob restartPolicy
+restartPolicy: "OnFailure"
+# -- cronjob backoffLimit
+backoffLimit: 0
+{{- end }}
