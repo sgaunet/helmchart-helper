@@ -80,6 +80,10 @@ func (a *App) SetServiceAccount(v bool) {
 	a.opts.ServiceAccount = v
 }
 
+func (a *App) SetStatefulSet(v bool) {
+	a.opts.StatefulSet = v
+}
+
 func (a *App) GenerateChart() error {
 	// create directories
 	err := os.MkdirAll(a.chartPath+string(os.PathSeparator)+"templates", 0755)
@@ -153,6 +157,12 @@ func (a *App) GenerateChart() error {
 	}
 	if a.opts.ServiceAccount {
 		err = createFileFromTemplate("chartTemplate/templates/serviceaccount.yaml", a.chartPath+string(os.PathSeparator)+"templates/serviceaccount.yaml", a.opts)
+		if err != nil {
+			return err
+		}
+	}
+	if a.opts.StatefulSet {
+		err = createFileFromTemplate("chartTemplate/templates/statefulset.yaml", a.chartPath+string(os.PathSeparator)+"templates/statefulset.yaml", a.opts)
 		if err != nil {
 			return err
 		}

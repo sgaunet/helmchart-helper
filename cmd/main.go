@@ -81,26 +81,11 @@ func main() {
 	// chartName := "myChart"
 	// chartPath := "tests/tmp/myChart"
 	app := app.NewApp(chartName, outputDir)
-
-	if flagDeployment {
-		app.SetDeployment(true)
-	}
-
-	if flagHpa {
-		app.SetHpa(flagHpa)
-	}
-
-	// if flagSts {
-	// 	app.SetSts()
-	// }
-	if flagDaemonSet {
-		app.SetDaemonSet(true)
-	}
-
-	if flagCronjob {
-		app.SetCronjob(true)
-	}
-
+	app.SetDeployment(flagDeployment)
+	app.SetHpa(flagHpa)
+	app.SetStatefulSet(flagSts)
+	app.SetDaemonSet(flagDaemonSet)
+	app.SetCronjob(flagCronjob)
 	app.SetConfigmap(flagConfigmap)
 	app.SetIngress(flagIngress)
 	app.SetVolumes(flagVolumes)
