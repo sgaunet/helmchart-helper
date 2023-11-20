@@ -96,10 +96,12 @@ configuration:
   PARAM2: "default value"
 {{- end }}
 
+{{- if .Configmap }}
 # -- additional configmap or secret. 
 additionalEnvFrom: []
 # - configMapRef:
 #     name: common-configmap1
+{{- end }}
 {{- if .Volumes }}
 volumes: {}
 volumeMounts: {}

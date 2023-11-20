@@ -59,11 +59,11 @@ spec:
           {{- end }}
           {{- if .Configmap }}
           envFrom:
+          - configMapRef:
+              name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
           {{"{{"}}- range .Values.additionalEnvFrom {{"}}"}}
           - {{"{{"}}- . | toYaml | nindent 12 {{"}}"}}
           {{"{{"}}- end {{"}}"}}
-          - configMapRef:
-              name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
           {{- end }}
           imagePullPolicy: {{"{{"}} .Values.image.pullPolicy {{"}}"}}
           {{- if .Service }}
