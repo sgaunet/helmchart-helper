@@ -1,0 +1,154 @@
+name: Exec testsuite
+
+testcases:
+- name: init
+  steps:
+
+- name: purge output dir
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      rm -rf tests/tmp/*
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: generate chart with default values
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/mychart
+      go run cmd/* -n mychart -o tests/tmp/mychart
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm-docs -c tests/tmp/mychart
+      helm lint tests/tmp/mychart
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: generate cronjob chart
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/mychart-cj
+      go run cmd/* -n mychart -o tests/tmp/mychart-cj -cj
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm-docs -c tests/tmp/mychart-cj
+      helm lint tests/tmp/mychart-cj
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: generate daemonset chart
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/mychart-ds
+      go run cmd/* -n mychart -o tests/tmp/mychart-ds -ds
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm-docs -c tests/tmp/mychart-ds
+      helm lint tests/tmp/mychart-ds
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: generate statefulset chart
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/mychart-sts
+      go run cmd/* -n mychart -o tests/tmp/mychart-sts -sts
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm-docs -c tests/tmp/mychart-sts
+      helm lint tests/tmp/mychart-sts
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: generate deployment chart with cm/svc/volumes
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/mychart-pv-svc-cm-sa-deploy
+      go run cmd/* -n mychart -o tests/tmp/mychart-pv-svc-cm-sa-deploy -pv -svc -cm -sa -deploy
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm-docs -c tests/tmp/mychart-pv-svc-cm-sa-deploy
+      helm lint tests/tmp/mychart-pv-svc-cm-sa-deploy
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: generate deployment chart with cm/ingress/svc/volumes
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/mychart-pv-svc-cm-ing-deploy
+      go run cmd/* -n mychart -o tests/tmp/mychart-pv-svc-cm-ing-deploy -pv -svc -cm -ing -deploy
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm-docs -c tests/tmp/mychart-pv-svc-cm-ing-deploy
+      helm lint tests/tmp/mychart-pv-svc-cm-ing-deploy
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: generate deployment chart with ds/cm/svc/volumes
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      mkdir -p tests/tmp/mychart-ds-pv-svc-cm
+      go run cmd/* -n mychart -o tests/tmp/mychart-ds-pv-svc-cm -ds -pv -svc -cm
+    assertions:
+    - result.code ShouldEqual 0
+
+- name: helm lint
+  steps:
+  - type: exec
+    script: |
+      cd {{.venom.testsuite.workdir}}/..
+      helm-docs -c tests/tmp/mychart-ds-pv-svc-cm
+      helm lint tests/tmp/mychart-ds-pv-svc-cm
+    assertions:
+    - result.code ShouldEqual 0

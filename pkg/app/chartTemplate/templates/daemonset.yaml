@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
+  labels:
+    {{"{{"}}- include "exemple.labels" . | nindent 4 {{"}}"}}
+    {{"{{"}}- with .Values.additionalLabels -{{"}}"}}
+      {{"{{"}}- toYaml . | nindent 4 {{"}}"}}
+    {{"{{"}}- end {{"}}"}}
+  annotations:
+    {{"{{"}}- with .Values.additionalAnnotations -{{"}}"}}
+      {{"{{"}}- toYaml . | nindent 4 {{"}}"}}
+    {{"{{"}}- end {{"}}"}}
+
+spec:
+  selector:
+    matchLabels:
+      {{"{{"}}- include "exemple.selectorLabels" . | nindent 6 {{"}}"}}
+  template:
+    metadata:
+      annotations:
+        {{"{{"}}- if eq .Values.image.tag "latest" {{"}}"}}
+        rollme: {{"{{"}} randAlphaNum 5 | quote {{"}}"}}
+        {{"{{"}}- end {{"}}"}}
+      {{"{{"}}- with .Values.podAnnotations {{"}}"}}
+        {{"{{"}}- toYaml . | nindent 8 {{"}}"}}
+      {{"{{"}}- end {{"}}"}}
+      labels:
+        {{"{{"}}- include "exemple.selectorLabels" . | nindent 8 {{"}}"}}
+    spec:
+      {{"{{"}}- with .Values.imagePullSecrets {{"}}"}}
+      imagePullSecrets:
+        {{"{{"}}- toYaml . | nindent 8 {{"}}"}}
+      {{"{{"}}- end {{"}}"}}
+      {{- if .ServiceAccount }}
+      serviceAccountName: {{"{{"}} include "exemple.serviceAccountName" . {{"}}"}}
+      {{- else }}
+      automountServiceAccountToken: false
+      {{- end }}
+      securityContext:
+        {{"{{"}}- toYaml .Values.podSecurityContext | nindent 8 {{"}}"}}
+      containers:
+        - name: {{"{{"}} .Chart.Name {{"}}"}}
+          securityContext:
+            {{"{{"}}- toYaml .Values.securityContext | nindent 12 {{"}}"}}
+          image: "{{"{{"}} .Values.image.repository }}:{{"{{"}} .Values.image.tag | default .Chart.AppVersion {{"}}"}}"
+          {{- if .Volumes }}
+          {{"{{"}}- with .Values.volumeMounts {{"}}"}}
+          volumeMounts:
+            {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
+          {{"{{"}}- end {{"}}"}}
+          {{- end }}
+          {{- if .Configmap }}
+          envFrom:
+          - configMapRef:
+              name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
+          {{"{{"}}- range .Values.additionalEnvFrom {{"}}"}}
+          - {{"{{"}}- . | toYaml | nindent 12 {{"}}"}}
+          {{"{{"}}- end {{"}}"}}
+          {{- end }}
+          imagePullPolicy: {{"{{"}} .Values.image.pullPolicy {{"}}"}}
+          {{- if .Service }}
+          ports:
+            - name: http
+              containerPort: {{"{{"}} .Values.service.port {{"}}"}}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          resources:
+            {{"{{"}}- toYaml .Values.resources | nindent 12 {{"}}"}}
+      {{"{{"}}- with .Values.nodeSelector {{"}}"}}
+      nodeSelector:
+        {{"{{"}}- toYaml . | nindent 8 {{"}}"}}
+      {{"{{"}}- end {{"}}"}}
+      {{"{{"}}- with .Values.affinity {{"}}"}}
+      affinity:
+        {{"{{"}}- toYaml . | nindent 8 {{"}}"}}
+      {{"{{"}}- end {{"}}"}}
+      {{"{{"}}- with .Values.tolerations {{"}}"}}
+      tolerations:
+        {{"{{"}}- toYaml . | nindent 8 {{"}}"}}
+      {{"{{"}}- end {{"}}"}}
+      {{- if .Volumes }}
+      {{"{{"}}- with .Values.volumes {{"}}"}}
+      volumes:
+        {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
+      {{"{{"}}- end {{"}}"}}
+      {{- end }}

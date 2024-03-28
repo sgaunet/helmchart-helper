@@ -1,0 +1,17 @@
+
+Your release is named {{ .Release.Name }}.
+
+Get the status of the release:
+  $ helm status {{ .Release.Name }} --namespace {{ .Release.Namespace }}
+
+Get all informations concerning the release:
+  $ helm get all {{ .Release.Name }} --namespace {{ .Release.Namespace }}
+
+Uninstall the release:
+  $ helm uninstall {{ .Release.Name }} --namespace {{ .Release.Namespace }}
+
+Check history of the release:
+  $ helm history {{ .Release.Name }} --namespace {{ .Release.Namespace }}
+
+Rollback to a specific revision:
+  $ helm rollback {{ .Release.Name }} <revision-number> --namespace {{ .Release.Namespace }}

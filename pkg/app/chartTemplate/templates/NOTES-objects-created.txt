@@ -1,0 +1,28 @@
+Objects created:
+{{- if .Deployment }}
+  * deployment
+{{- end }}
+{{- if .StatefulSet }}
+  * statefulset
+{{- end }}
+{{- if .Cronjob }}
+  * cronjob
+{{- end }}
+{{- if .DaemonSet }}
+  * daemonset
+{{- end }}
+{{- if .Configmap }}
+  * configmap
+{{- end }}
+{{- if .Service }}
+  * service
+{{- end }}
+{{- if .Hpa }}
+  * hpa
+{{- end }}
+{{- if .Ingress }}
+  * ingress
+{{- end }}
+{{- if .ServiceAccount }}
+  * serviceaccount
+{{- end }}

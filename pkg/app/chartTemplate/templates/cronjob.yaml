@@ -1,0 +1,94 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
+  labels:
+    {{"{{"}}- include "exemple.labels" . | nindent 4 {{"}}"}}
+    {{"{{"}}- with .Values.additionalLabels -{{"}}"}}
+      {{"{{"}}- toYaml . | nindent 4 {{"}}"}}
+    {{"{{"}}- end {{"}}"}}
+  annotations:
+    {{"{{"}}- with .Values.additionalAnnotations -{{"}}"}}
+      {{"{{"}}- toYaml . | nindent 4 {{"}}"}}
+    {{"{{"}}- end {{"}}"}}
+
+spec:
+  schedule: {{"{{"}} toYaml .Values.schedule {{"}}"}}
+  suspend: {{"{{"}} toYaml .Values.suspend {{"}}"}}
+  concurrencyPolicy: {{"{{"}} toYaml .Values.concurrencyPolicy {{"}}"}}
+  failedJobsHistoryLimit: {{"{{"}} toYaml .Values.failedJobsHistoryLimit {{"}}"}}
+  successfulJobsHistoryLimit: {{"{{"}} .Values.successfulJobsHistoryLimit {{"}}"}}
+  jobTemplate:
+    spec:
+      backoffLimit: {{"{{"}} toYaml .Values.backoffLimit {{"}}"}}
+      template:
+        metadata:
+          labels:
+            {{"{{"}}- include "exemple.selectorLabels" . | nindent 12 {{"}}"}}
+        spec:
+          restartPolicy: {{"{{"}} .Values.restartPolicy {{"}}"}}
+          {{"{{"}}- with .Values.imagePullSecrets {{"}}"}}
+          imagePullSecrets:
+            {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
+          {{"{{"}}- end {{"}}"}}
+          {{- if .ServiceAccount }}
+          serviceAccountName: {{"{{"}} include "exemple.serviceAccountName" . {{"}}"}}
+          {{- else }}
+          automountServiceAccountToken: false
+          {{- end }}
+          securityContext:
+            {{"{{"}}- toYaml .Values.podSecurityContext | nindent 12 {{"}}"}}
+          containers:
+            - name: {{"{{"}} .Chart.Name {{"}}"}}
+              securityContext:
+                {{"{{"}}- toYaml .Values.securityContext | nindent 16 {{"}}"}}
+              image: "{{"{{"}} .Values.image.repository }}:{{"{{"}} .Values.image.tag | default .Chart.AppVersion {{"}}"}}"
+              {{- if .Volumes }}
+              {{"{{"}}- with .Values.volumeMounts {{"}}"}}
+              volumeMounts:
+                {{"{{"}}- toYaml . | nindent 16 {{"}}"}}
+              {{"{{"}}- end {{"}}"}}
+              {{- end }}
+              {{- if .Configmap }}
+              envFrom:
+              - configMapRef:
+                  name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
+              {{"{{"}}- range .Values.additionalEnvFrom {{"}}"}}
+              - {{"{{"}}- . | toYaml | nindent 16 {{"}}"}}
+              {{"{{"}}- end {{"}}"}}
+              {{- end }}
+              imagePullPolicy: {{"{{"}} .Values.image.pullPolicy {{"}}"}}
+              {{- if .Service }}
+              ports:
+                - name: http
+                  containerPort: {{"{{"}} .Values.service.port {{"}}"}}
+                  protocol: TCP
+              livenessProbe:
+                httpGet:
+                  path: /
+                  port: http
+              readinessProbe:
+                httpGet:
+                  path: /
+                  port: http
+              {{- end }}
+              resources:
+                {{"{{"}}- toYaml .Values.resources | nindent 16 {{"}}"}}
+          {{"{{"}}- with .Values.nodeSelector {{"}}"}}
+          nodeSelector:
+            {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
+          {{"{{"}}- end {{"}}"}}
+          {{"{{"}}- with .Values.affinity {{"}}"}}
+          affinity:
+            {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
+          {{"{{"}}- end {{"}}"}}
+          {{"{{"}}- with .Values.tolerations {{"}}"}}
+          tolerations:
+            {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
+          {{"{{"}}- end {{"}}"}}
+          {{- if .Volumes }}
+          {{"{{"}}- with .Values.volumes {{"}}"}}
+          volumes:
+            {{"{{"}}- toYaml . | nindent 14 {{"}}"}}
+          {{"{{"}}- end {{"}}"}}
+          {{- end }}
