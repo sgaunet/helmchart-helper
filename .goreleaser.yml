@@ -1,5 +1,6 @@
 ---
 # project_name: helmchart-helper
+version: 2
 before:
   hooks:
     # You may remove this if you don't use go modules.
@@ -31,9 +32,6 @@ archives:
 
 checksum:
   name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ .Tag }}-snapshot"
-
 
 changelog:
   sort: asc
@@ -44,7 +42,6 @@ changelog:
 
 brews:
   - homepage: 'https://github.com/sgaunet/homebrew-tools'
-    folder: Formula
     # Custom install script for brew.
     #
     # Template: allowed
