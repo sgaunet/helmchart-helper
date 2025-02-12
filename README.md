@@ -18,12 +18,21 @@ Helmchart-helper is a command-line tool for quickly generating basic Helm charts
 
 ## Installation
 
-Download a release from the releases page.
+### release
 
-or install it with go:
+Download a release from the releases page and add the binary to your PATH.
+
+### with go
 
 ```bash
 go install github.com/your-username/helmchart-helper@latest
+```
+
+### homebrew
+
+```bash
+brew tap sgaunet/homebrew-tools
+brew install sgaunet/tools/helmchart-helper
 ```
 
 ## Usage
