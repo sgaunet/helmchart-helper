@@ -28,7 +28,7 @@ builds:
 
 archives:
   - name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
-    format: binary
+    formats: ["binary"]
 
 checksum:
   name_template: 'checksums.txt'
@@ -42,17 +42,10 @@ changelog:
 
 brews:
   - homepage: 'https://github.com/sgaunet/homebrew-tools'
-    # Custom install script for brew.
-    #
-    # Template: allowed
-    # Default: 'bin.install "BinaryName"'
-    install: |
-      bin.install "helmchart-helper"
-      # bash_completion.install "completions/foo.bash" => "foo"
-      # ...
+    directory: Formula
     commit_author:
       name: sgaunet
-      email: sgaunet@gmail.com
+      email: 1552102+sgaunet@users.noreply.github.com
     repository:
       owner: sgaunet
       name: homebrew-tools
