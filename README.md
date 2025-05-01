@@ -1,7 +1,6 @@
 [![GitHub release](https://img.shields.io/github/release/sgaunet/helmchart-helper.svg)](https://github.com/sgaunet/helmchart-helper/releases/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sgaunet/helmchart-helper)](https://goreportcard.com/report/github.com/sgaunet/helmchart-helper)
 ![GitHub Downloads](https://img.shields.io/github/downloads/sgaunet/helmchart-helper/total)
-[![Maintainability](https://api.codeclimate.com/v1/badges/3f62eea5e0ef5614c858/maintainability)](https://codeclimate.com/github/sgaunet/helmchart-helper/maintainability)
 [![License](https://img.shields.io/github/license/sgaunet/helmchart-helper.svg)](LICENSE)
 
 # helmchart-helper
