@@ -1,100 +1,50 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-	"os"
-
 	"github.com/sgaunet/helmchart-helper/pkg/app"
-	// "github.com/bitfield/script"
+	"github.com/sgaunet/helmchart-helper/pkg/cli"
+	"github.com/sgaunet/helmchart-helper/pkg/filesystem"
 )
 
 var version = "dev"
 
-func printVersion() {
-	fmt.Printf("%s\n", version)
-}
-
 func main() {
-	var (
-		flagHpa            bool
-		flagSts            bool
-		flagDeployment     bool
-		flagDaemonSet      bool
-		flagCronjob        bool
-		flagConfigmap      bool
-		flagService        bool
-		flagServiceAccount bool
-		flagIngress        bool
-		flagVolumes        bool
-
-		flagVersion bool
-		flagHelp    bool
-		chartName   string
-		outputDir   string
-	)
-
-	flag.StringVar(&chartName, "n", "", "Name of the chart")
-	flag.StringVar(&outputDir, "o", "", "Path of the generated chart")
-
-	flag.BoolVar(&flagHpa, "hpa", false, "hpa")
-	flag.BoolVar(&flagSts, "sts", false, "statefulset")
-	flag.BoolVar(&flagDaemonSet, "ds", false, "daemonse")
-	flag.BoolVar(&flagCronjob, "cj", false, "cronjob")
-	flag.BoolVar(&flagDeployment, "deploy", false, "deployment")
-	flag.BoolVar(&flagConfigmap, "cm", false, "configmap")
-	flag.BoolVar(&flagIngress, "ing", false, "ingress")
-	flag.BoolVar(&flagVolumes, "pv", false, "volumes")
-	flag.BoolVar(&flagService, "svc", false, "service")
-	flag.BoolVar(&flagServiceAccount, "sa", false, "serviceaccount")
-
-	flag.BoolVar(&flagVersion, "version", false, "Print version")
-	flag.BoolVar(&flagHelp, "help", false, "Print help")
-	flag.Parse()
-
-	if flagVersion {
-		printVersion()
-		os.Exit(0)
-	}
-
-	if flagHelp {
-		flag.PrintDefaults()
-		os.Exit(0)
-	}
-
-	// TODO: check if helm is installed
-	if len(chartName) == 0 {
-		fmt.Fprintf(os.Stderr, "Error: chart name is required\n")
-		os.Exit(1)
-	}
-
-	if len(outputDir) == 0 {
-		fmt.Fprintf(os.Stderr, "Error: chart path is required\n")
-		os.Exit(1)
-	}
-
-	// TODO: check if chartPath exists (if not create it)
-
-	// p := script.Exec("gum confirm \"Are you sure?\"").WithStderr(os.Stderr).WithStdout(os.Stdout)
-	// p.Wait()
-	// fmt.Println(p.ExitStatus())
-	// chartName := "myChart"
-	// chartPath := "tests/tmp/myChart"
-	app := app.NewApp(chartName, outputDir)
-	app.SetDeployment(flagDeployment)
-	app.SetHpa(flagHpa)
-	app.SetStatefulSet(flagSts)
-	app.SetDaemonSet(flagDaemonSet)
-	app.SetCronjob(flagCronjob)
-	app.SetConfigmap(flagConfigmap)
-	app.SetIngress(flagIngress)
-	app.SetVolumes(flagVolumes)
-	app.SetService(flagService)
-	app.SetServiceAccount(flagServiceAccount)
-
-	err := app.GenerateChart()
+	// Parse CLI flags
+	config, err := cli.ParseFlags()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		cli.ExitWithError(err)
+	}
+
+	// Handle early exit flags (version, help)
+	if config.HandleEarlyExit(version) {
+		cli.ExitSuccess()
+	}
+
+	// Validate configuration
+	if err := config.Validate(); err != nil {
+		cli.ExitWithError(err)
+	}
+
+	// Create dependencies
+	fs := filesystem.NewOSFileSystem()
+	templateProcessor := filesystem.NewDefaultTemplateProcessor()
+	pathManager := filesystem.NewDefaultPathManager()
+	
+	// Create and configure app
+	chartApp := app.NewApp(config.ChartName, config.OutputDir, fs, templateProcessor, pathManager, app.GetChartTemplate())
+	chartApp.SetDeployment(config.Deployment)
+	chartApp.SetHpa(config.Hpa)
+	chartApp.SetStatefulSet(config.StatefulSet)
+	chartApp.SetDaemonSet(config.DaemonSet)
+	chartApp.SetCronjob(config.Cronjob)
+	chartApp.SetConfigmap(config.Configmap)
+	chartApp.SetIngress(config.Ingress)
+	chartApp.SetVolumes(config.Volumes)
+	chartApp.SetService(config.Service)
+	chartApp.SetServiceAccount(config.ServiceAccount)
+
+	// Generate chart
+	if err := chartApp.GenerateChart(); err != nil {
+		cli.ExitWithError(err)
 	}
 }
