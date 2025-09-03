@@ -1,6 +1,8 @@
 # Declare variables to be passed into your templates.
+{{- if or .Deployment .StatefulSet }}
 # -- number of replicas
 replicaCount: 1
+{{- end }}
 # -- additional deployment labels (will be merged with the default labels)
 additionalLabels: {}
 # additionalLabels:
