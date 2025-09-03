@@ -27,6 +27,7 @@ spec:
             {{"{{"}}- include "exemple.selectorLabels" . | nindent 12 {{"}}"}}
         spec:
           restartPolicy: {{"{{"}} .Values.restartPolicy {{"}}"}}
+          hostname: {{"{{"}} include "exemple.fullname" . {{"}}"}}
           {{"{{"}}- with .Values.imagePullSecrets {{"}}"}}
           imagePullSecrets:
             {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
