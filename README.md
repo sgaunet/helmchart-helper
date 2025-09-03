@@ -1,5 +1,6 @@
 [![GitHub release](https://img.shields.io/github/release/sgaunet/helmchart-helper.svg)](https://github.com/sgaunet/helmchart-helper/releases/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sgaunet/helmchart-helper)](https://goreportcard.com/report/github.com/sgaunet/helmchart-helper)
+![coverage](https://raw.githubusercontent.com/wiki/sgaunet/helmchart-helper/coverage-badge.svg)
 ![GitHub Downloads](https://img.shields.io/github/downloads/sgaunet/helmchart-helper/total)
 [![License](https://img.shields.io/github/license/sgaunet/helmchart-helper.svg)](LICENSE)
 
