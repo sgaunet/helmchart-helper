@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
+  name: {{"{{"}} include "example.fullname" . {{"}}"}}
   labels:
-    {{"{{"}}- include "exemple.labels" . | nindent 4 {{"}}"}}
+    {{"{{"}}- include "example.labels" . | nindent 4 {{"}}"}}
     {{"{{"}}- with .Values.additionalLabels -{{"}}"}}
       {{"{{"}}- toYaml . | nindent 4 {{"}}"}}
     {{"{{"}}- end {{"}}"}}
@@ -24,16 +24,16 @@ spec:
       template:
         metadata:
           labels:
-            {{"{{"}}- include "exemple.selectorLabels" . | nindent 12 {{"}}"}}
+            {{"{{"}}- include "example.selectorLabels" . | nindent 12 {{"}}"}}
         spec:
           restartPolicy: {{"{{"}} .Values.restartPolicy {{"}}"}}
-          hostname: {{"{{"}} include "exemple.fullname" . {{"}}"}}
+          hostname: {{"{{"}} include "example.fullname" . {{"}}"}}
           {{"{{"}}- with .Values.imagePullSecrets {{"}}"}}
           imagePullSecrets:
             {{"{{"}}- toYaml . | nindent 12 {{"}}"}}
           {{"{{"}}- end {{"}}"}}
           {{- if .ServiceAccount }}
-          serviceAccountName: {{"{{"}} include "exemple.serviceAccountName" . {{"}}"}}
+          serviceAccountName: {{"{{"}} include "example.serviceAccountName" . {{"}}"}}
           {{- else }}
           automountServiceAccountToken: false
           {{- end }}
@@ -53,7 +53,7 @@ spec:
               {{- if .Configmap }}
               envFrom:
               - configMapRef:
-                  name: {{"{{"}} include "exemple.fullname" . {{"}}"}}
+                  name: {{"{{"}} include "example.fullname" . {{"}}"}}
               {{"{{"}}- range .Values.additionalEnvFrom {{"}}"}}
               - {{"{{"}}- . | toYaml | nindent 16 {{"}}"}}
               {{"{{"}}- end {{"}}"}}

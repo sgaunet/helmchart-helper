@@ -220,12 +220,12 @@ func TestApp_replaceTemplatePlaceholders(t *testing.T) {
 		wantErr      bool
 	}{
 		{
-			name: "replace exemple with chart name",
+			name: "replace example with chart name",
 			opts: options{
 				ChartName: "my-awesome-chart",
 			},
 			initialFiles: map[string][]byte{
-				"test-path/Chart.yaml": []byte("name: exemple\nversion: 1.0.0"),
+				"test-path/Chart.yaml": []byte("name: example\nversion: 1.0.0"),
 			},
 			expectedContent: "name: my-awesome-chart\nversion: 1.0.0",
 			wantErr:         false,
