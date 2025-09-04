@@ -107,7 +107,7 @@ func (e *ChartError) Unwrap() error {
 	return e.Underlying
 }
 
-// Is implements error comparison for errors.Is
+// Is implements error comparison for errors.Is.
 func (e *ChartError) Is(target error) bool {
 	if chartErr, ok := target.(*ChartError); ok {
 		return e.Type == chartErr.Type && e.Operation == chartErr.Operation
@@ -115,7 +115,7 @@ func (e *ChartError) Is(target error) bool {
 	return false
 }
 
-// WithContext adds context to an error
+// WithContext adds context to an error.
 func (e *ChartError) WithContext(key, value string) *ChartError {
 	if e.Context == nil {
 		e.Context = make(map[string]string)
@@ -124,17 +124,17 @@ func (e *ChartError) WithContext(key, value string) *ChartError {
 	return e
 }
 
-// WithFile adds file context to an error
+// WithFile adds file context to an error.
 func (e *ChartError) WithFile(filePath string) *ChartError {
 	return e.WithContext("file", filePath)
 }
 
-// WithChart adds chart context to an error
+// WithChart adds chart context to an error.
 func (e *ChartError) WithChart(chartName string) *ChartError {
 	return e.WithContext("chart", chartName)
 }
 
-// WrapError wraps an existing error with context
+// WrapError wraps an existing error with context.
 func WrapError(err error, errorType ErrorType, operation, message string) *ChartError {
 	return &ChartError{
 		Type:       errorType,

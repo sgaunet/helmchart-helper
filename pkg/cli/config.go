@@ -9,7 +9,7 @@ import (
 	"github.com/sgaunet/helmchart-helper/pkg/errors"
 )
 
-// Config holds all CLI configuration
+// Config holds all CLI configuration.
 type Config struct {
 	ChartName      string
 	OutputDir      string
@@ -27,12 +27,12 @@ type Config struct {
 	Help           bool
 }
 
-// ParseFlags parses command line flags and returns Config
+// ParseFlags parses command line flags and returns Config.
 func ParseFlags() (*Config, error) {
 	return ParseFlagsFromArgs(os.Args[1:])
 }
 
-// ParseFlagsFromArgs parses flags from provided arguments (for testing)
+// ParseFlagsFromArgs parses flags from provided arguments (for testing).
 func ParseFlagsFromArgs(args []string) (*Config, error) {
 	config := &Config{}
 	flagSet := flag.NewFlagSet("helmchart-helper", flag.ContinueOnError)
@@ -61,7 +61,7 @@ func ParseFlagsFromArgs(args []string) (*Config, error) {
 	return config, nil
 }
 
-// Validate validates the configuration
+// Validate validates the configuration.
 func (c *Config) Validate() error {
 	if c.ChartName == "" {
 		return errors.NewValidationError("validate-config", "chart name is required").
@@ -76,17 +76,17 @@ func (c *Config) Validate() error {
 	return nil
 }
 
-// PrintVersion prints the version
+// PrintVersion prints the version.
 func PrintVersion(version string) {
 	fmt.Printf("%s\n", version)
 }
 
-// PrintHelp prints help information
+// PrintHelp prints help information.
 func PrintHelp() {
 	flag.PrintDefaults()
 }
 
-// HandleEarlyExit handles version and help flags that should exit early
+// HandleEarlyExit handles version and help flags that should exit early.
 func (c *Config) HandleEarlyExit(version string) bool {
 	if c.Version {
 		PrintVersion(version)
@@ -101,13 +101,13 @@ func (c *Config) HandleEarlyExit(version string) bool {
 	return false
 }
 
-// ExitWithError prints error and exits
+// ExitWithError prints error and exits.
 func ExitWithError(err error) {
 	fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 	os.Exit(1)
 }
 
-// ExitSuccess exits with success code
+// ExitSuccess exits with success code.
 func ExitSuccess() {
 	os.Exit(0)
 }

@@ -60,57 +60,57 @@ func NewApp(chartName string, chartPath string, fs interfaces.FileSystem, templa
 	}
 }
 
-// SetDeployment enables or disables Deployment resource generation
+// SetDeployment enables or disables Deployment resource generation.
 func (a *App) SetDeployment(v bool) {
 	a.opts.Deployment = v
 }
 
-// SetCronjob enables or disables CronJob resource generation
+// SetCronjob enables or disables CronJob resource generation.
 func (a *App) SetCronjob(v bool) {
 	a.opts.Cronjob = v
 }
 
-// SetDaemonSet enables or disables DaemonSet resource generation
+// SetDaemonSet enables or disables DaemonSet resource generation.
 func (a *App) SetDaemonSet(v bool) {
 	a.opts.DaemonSet = v
 }
 
-// SetConfigmap enables or disables ConfigMap resource generation
+// SetConfigmap enables or disables ConfigMap resource generation.
 func (a *App) SetConfigmap(v bool) {
 	a.opts.Configmap = v
 }
 
-// SetService enables or disables Service resource generation
+// SetService enables or disables Service resource generation.
 func (a *App) SetService(v bool) {
 	a.opts.Service = v
 }
 
-// SetIngress enables or disables Ingress resource generation
+// SetIngress enables or disables Ingress resource generation.
 func (a *App) SetIngress(v bool) {
 	a.opts.Ingress = v
 }
 
-// SetVolumes enables or disables Volumes resource generation
+// SetVolumes enables or disables Volumes resource generation.
 func (a *App) SetVolumes(v bool) {
 	a.opts.Volumes = v
 }
 
-// SetHpa enables or disables HorizontalPodAutoscaler resource generation
+// SetHpa enables or disables HorizontalPodAutoscaler resource generation.
 func (a *App) SetHpa(v bool) {
 	a.opts.Hpa = v
 }
 
-// SetServiceAccount enables or disables ServiceAccount resource generation
+// SetServiceAccount enables or disables ServiceAccount resource generation.
 func (a *App) SetServiceAccount(v bool) {
 	a.opts.ServiceAccount = v
 }
 
-// SetStatefulSet enables or disables StatefulSet resource generation
+// SetStatefulSet enables or disables StatefulSet resource generation.
 func (a *App) SetStatefulSet(v bool) {
 	a.opts.StatefulSet = v
 }
 
-// GenerateChart generates the complete Helm chart with all configured resources
+// GenerateChart generates the complete Helm chart with all configured resources.
 func (a *App) GenerateChart() error {
 	if err := a.createDirectoryStructure(); err != nil {
 		return err

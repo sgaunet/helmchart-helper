@@ -36,7 +36,7 @@ func NewMockFileSystem() *MockFileSystem {
 	}
 }
 
-// MkdirAll simulates creating directories in the mock filesystem
+// MkdirAll simulates creating directories in the mock filesystem.
 func (mfs *MockFileSystem) MkdirAll(path string, _ fs.FileMode) error {
 	if err, exists := mfs.Errors["MkdirAll:"+path]; exists {
 		return err
@@ -45,7 +45,7 @@ func (mfs *MockFileSystem) MkdirAll(path string, _ fs.FileMode) error {
 	return nil
 }
 
-// Create simulates creating a file in the mock filesystem
+// Create simulates creating a file in the mock filesystem.
 func (mfs *MockFileSystem) Create(name string) (interfaces.File, error) {
 	if err, exists := mfs.Errors["Create:"+name]; exists {
 		return nil, err
@@ -53,7 +53,7 @@ func (mfs *MockFileSystem) Create(name string) (interfaces.File, error) {
 	return &MockFile{name: name, fs: mfs}, nil
 }
 
-// WriteFile simulates writing to a file in the mock filesystem
+// WriteFile simulates writing to a file in the mock filesystem.
 func (mfs *MockFileSystem) WriteFile(name string, data []byte, _ fs.FileMode) error {
 	if err, exists := mfs.Errors["WriteFile:"+name]; exists {
 		return err
@@ -62,7 +62,7 @@ func (mfs *MockFileSystem) WriteFile(name string, data []byte, _ fs.FileMode) er
 	return nil
 }
 
-// ReadFile simulates reading a file from the mock filesystem
+// ReadFile simulates reading a file from the mock filesystem.
 func (mfs *MockFileSystem) ReadFile(name string) ([]byte, error) {
 	if err, exists := mfs.Errors["ReadFile:"+name]; exists {
 		return nil, err
@@ -73,7 +73,7 @@ func (mfs *MockFileSystem) ReadFile(name string) ([]byte, error) {
 	return nil, ErrFileNotFound
 }
 
-// OpenFile simulates opening a file in the mock filesystem
+// OpenFile simulates opening a file in the mock filesystem.
 func (mfs *MockFileSystem) OpenFile(name string, _ int, _ fs.FileMode) (interfaces.File, error) {
 	if err, exists := mfs.Errors["OpenFile:"+name]; exists {
 		return nil, err
@@ -81,7 +81,7 @@ func (mfs *MockFileSystem) OpenFile(name string, _ int, _ fs.FileMode) (interfac
 	return &MockFile{name: name, fs: mfs}, nil
 }
 
-// Walk simulates walking the directory tree in the mock filesystem
+// Walk simulates walking the directory tree in the mock filesystem.
 func (mfs *MockFileSystem) Walk(root string, fn filepath.WalkFunc) error {
 	if err, exists := mfs.Errors["Walk:"+root]; exists {
 		return err
@@ -98,14 +98,14 @@ func (mfs *MockFileSystem) Walk(root string, fn filepath.WalkFunc) error {
 	return nil
 }
 
-// MockFile implements File interface for testing
+// MockFile implements File interface for testing.
 type MockFile struct {
 	name string
 	fs   *MockFileSystem
 	buf  bytes.Buffer
 }
 
-// Write simulates writing bytes to the mock file
+// Write simulates writing bytes to the mock file.
 func (mf *MockFile) Write(p []byte) (int, error) {
 	n, err := mf.buf.Write(p)
 	if err != nil {
@@ -114,7 +114,7 @@ func (mf *MockFile) Write(p []byte) (int, error) {
 	return n, nil
 }
 
-// WriteString simulates writing a string to the mock file
+// WriteString simulates writing a string to the mock file.
 func (mf *MockFile) WriteString(s string) (int, error) {
 	n, err := mf.buf.WriteString(s)
 	if err != nil {
@@ -123,38 +123,38 @@ func (mf *MockFile) WriteString(s string) (int, error) {
 	return n, nil
 }
 
-// Close simulates closing the mock file
+// Close simulates closing the mock file.
 func (mf *MockFile) Close() error {
 	mf.fs.Files[mf.name] = mf.buf.Bytes()
 	return nil
 }
 
-// MockFileInfo implements fs.FileInfo for testing
+// MockFileInfo implements fs.FileInfo for testing.
 type MockFileInfo struct {
 	name  string
 	isDir bool
 }
 
-// Name returns the name of the mock file
+// Name returns the name of the mock file.
 func (mfi *MockFileInfo) Name() string       { return mfi.name }
-// Size returns the size of the mock file
+// Size returns the size of the mock file.
 func (mfi *MockFileInfo) Size() int64        { return 0 }
-// Mode returns the file mode of the mock file
+// Mode returns the file mode of the mock file.
 func (mfi *MockFileInfo) Mode() fs.FileMode  { return 0 }
-// ModTime returns the modification time of the mock file
+// ModTime returns the modification time of the mock file.
 func (mfi *MockFileInfo) ModTime() time.Time { return time.Time{} }
-// IsDir returns whether the mock file is a directory
+// IsDir returns whether the mock file is a directory.
 func (mfi *MockFileInfo) IsDir() bool        { return mfi.isDir }
-// Sys returns the underlying system interface (always nil for mocks)
+// Sys returns the underlying system interface (always nil for mocks).
 func (mfi *MockFileInfo) Sys() interface{}   { return nil }
 
-// MockTemplateProcessor implements TemplateProcessor interface for testing
+// MockTemplateProcessor implements TemplateProcessor interface for testing.
 type MockTemplateProcessor struct {
 	Templates map[string]string
 	Errors    map[string]error
 }
 
-// NewMockTemplateProcessor creates a new mock template processor for testing
+// NewMockTemplateProcessor creates a new mock template processor for testing.
 func NewMockTemplateProcessor() *MockTemplateProcessor {
 	return &MockTemplateProcessor{
 		Templates: make(map[string]string),
@@ -162,7 +162,7 @@ func NewMockTemplateProcessor() *MockTemplateProcessor {
 	}
 }
 
-// ParseFS simulates parsing templates from an embedded filesystem
+// ParseFS simulates parsing templates from an embedded filesystem.
 func (mtp *MockTemplateProcessor) ParseFS(_ embed.FS, pattern string) (*template.Template, error) {
 	if err, exists := mtp.Errors["ParseFS:"+pattern]; exists {
 		return nil, err
@@ -181,7 +181,7 @@ func (mtp *MockTemplateProcessor) ParseFS(_ embed.FS, pattern string) (*template
 	return tmpl, nil
 }
 
-// ReadFile simulates reading a file from an embedded filesystem
+// ReadFile simulates reading a file from an embedded filesystem.
 func (mtp *MockTemplateProcessor) ReadFile(_ embed.FS, name string) ([]byte, error) {
 	if err, exists := mtp.Errors["ReadFile:"+name]; exists {
 		return nil, err
@@ -192,14 +192,14 @@ func (mtp *MockTemplateProcessor) ReadFile(_ embed.FS, name string) ([]byte, err
 	return []byte("mock content"), nil
 }
 
-// Execute simulates executing a template with data
+// Execute simulates executing a template with data.
 func (mtp *MockTemplateProcessor) Execute(tmpl *template.Template, data interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	err := tmpl.Execute(&buf, data)
 	return buf.Bytes(), err
 }
 
-// MockPathManager implements PathManager interface for testing
+// MockPathManager implements PathManager interface for testing.
 type MockPathManager struct {
 	JoinFunc      func(elem ...string) string
 	SeparatorFunc func() string
@@ -207,7 +207,7 @@ type MockPathManager struct {
 	CleanFunc     func(path string) string
 }
 
-// NewMockPathManager creates a new mock path manager for testing
+// NewMockPathManager creates a new mock path manager for testing.
 func NewMockPathManager() *MockPathManager {
 	return &MockPathManager{
 		JoinFunc:      func(elem ...string) string { return strings.Join(elem, "/") },
@@ -217,22 +217,22 @@ func NewMockPathManager() *MockPathManager {
 	}
 }
 
-// Join simulates joining path elements
+// Join simulates joining path elements.
 func (mpm *MockPathManager) Join(elem ...string) string {
 	return mpm.JoinFunc(elem...)
 }
 
-// Separator returns the mock path separator
+// Separator returns the mock path separator.
 func (mpm *MockPathManager) Separator() string {
 	return mpm.SeparatorFunc()
 }
 
-// IsAbs simulates checking if a path is absolute
+// IsAbs simulates checking if a path is absolute.
 func (mpm *MockPathManager) IsAbs(path string) bool {
 	return mpm.IsAbsFunc(path)
 }
 
-// Clean simulates cleaning a path
+// Clean simulates cleaning a path.
 func (mpm *MockPathManager) Clean(path string) string {
 	return mpm.CleanFunc(path)
 }
