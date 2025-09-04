@@ -32,7 +32,7 @@ type TemplateProcessor interface {
 	Execute(tmpl *template.Template, data interface{}) ([]byte, error)
 }
 
-// PathManager abstracts path operations
+// PathManager abstracts path operations.
 type PathManager interface {
 	Join(elem ...string) string
 	Separator() string
