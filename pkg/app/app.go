@@ -326,7 +326,7 @@ func (a *App) replaceExampleInAllFiles(path string) error {
 			return fmt.Errorf("failed to read file %s: %w", p, err)
 		}
 		// fmt.Println(path)
-		newContents := strings.ReplaceAll(string(read), "example", a.opts.ChartName)
+		newContents := strings.ReplaceAll(string(read), "exemple", a.opts.ChartName)
 		if err = a.fs.WriteFile(p, []byte(newContents), 0); err != nil {
 			return fmt.Errorf("failed to write file %s: %w", p, err)
 		}
