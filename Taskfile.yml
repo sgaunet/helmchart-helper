@@ -17,7 +17,11 @@ tasks:
     desc: "Build binary"
     cmds:
       - CGO_ENABLED=0 go build -o {{ .BINFILE }} cmd/*.go
-    # silent: true
+  
+  linter:
+    desc: "Run linters"
+    cmds:
+      - golangci-lint run
 
   tests:
     desc: "Run tests"

@@ -1,3 +1,4 @@
+// Package main is the entry point for the Helm chart helper CLI tool.
 package main
 
 import (

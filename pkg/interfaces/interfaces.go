@@ -1,3 +1,4 @@
+// Package interfaces defines abstractions for filesystem, template processing, and path operations.
 package interfaces
 
 import (
@@ -7,7 +8,7 @@ import (
 	"text/template"
 )
 
-// FileSystem abstracts file system operations for testing
+// FileSystem abstracts file system operations for testing.
 type FileSystem interface {
 	MkdirAll(path string, perm fs.FileMode) error
 	Create(name string) (File, error)
@@ -17,14 +18,14 @@ type FileSystem interface {
 	Walk(root string, fn filepath.WalkFunc) error
 }
 
-// File abstracts file operations
+// File abstracts file operations.
 type File interface {
-	Write([]byte) (int, error)
-	WriteString(string) (int, error)
+	Write(data []byte) (int, error)
+	WriteString(s string) (int, error)
 	Close() error
 }
 
-// TemplateProcessor abstracts template processing operations
+// TemplateProcessor abstracts template processing operations.
 type TemplateProcessor interface {
 	ParseFS(fs embed.FS, pattern string) (*template.Template, error)
 	ReadFile(fs embed.FS, name string) ([]byte, error)

@@ -1,3 +1,4 @@
+// Package errors provides structured error handling for the Helm chart helper.
 package errors
 
 import (
@@ -5,21 +6,21 @@ import (
 	"strings"
 )
 
-// ErrorType represents the type of error
+// ErrorType represents the type of error.
 type ErrorType string
 
 const (
-	// ValidationError represents validation failures
+	// ValidationError represents validation failures.
 	ValidationError ErrorType = "validation"
-	// FileSystemError represents file system operation failures
+	// FileSystemError represents file system operation failures.
 	FileSystemError ErrorType = "filesystem"
-	// TemplateError represents template processing failures
+	// TemplateError represents template processing failures.
 	TemplateError ErrorType = "template"
-	// ConfigurationError represents configuration-related errors
+	// ConfigurationError represents configuration-related errors.
 	ConfigurationError ErrorType = "configuration"
 )
 
-// ChartError represents a structured error with context
+// ChartError represents a structured error with context.
 type ChartError struct {
 	Type       ErrorType
 	Operation  string
@@ -28,12 +29,54 @@ type ChartError struct {
 	Context    map[string]string
 }
 
-// Error implements the error interface
+// NewValidationError creates a new validation error.
+func NewValidationError(operation, message string) *ChartError {
+	return &ChartError{
+		Type:      ValidationError,
+		Operation: operation,
+		Message:   message,
+		Context:   make(map[string]string),
+	}
+}
+
+// NewFileSystemError creates a new file system error.
+func NewFileSystemError(operation, message string, underlying error) *ChartError {
+	return &ChartError{
+		Type:       FileSystemError,
+		Operation:  operation,
+		Message:    message,
+		Underlying: underlying,
+		Context:    make(map[string]string),
+	}
+}
+
+// NewTemplateError creates a new template error.
+func NewTemplateError(operation, message string, underlying error) *ChartError {
+	return &ChartError{
+		Type:       TemplateError,
+		Operation:  operation,
+		Message:    message,
+		Underlying: underlying,
+		Context:    make(map[string]string),
+	}
+}
+
+// NewConfigurationError creates a new configuration error.
+func NewConfigurationError(operation, message string) *ChartError {
+	return &ChartError{
+		Type:      ConfigurationError,
+		Operation: operation,
+		Message:   message,
+		Context:   make(map[string]string),
+	}
+}
+
+// Error implements the error interface.
 func (e *ChartError) Error() string {
 	var parts []string
 	
 	if e.Operation != "" {
-		parts = append(parts, fmt.Sprintf("operation: %s", e.Operation))
+		parts = append(parts, "operation: "+e.Operation)
 	}
 	
 	if e.Type != "" {
@@ -53,13 +96,13 @@ func (e *ChartError) Error() string {
 		for k, v := range e.Context {
 			contextParts = append(contextParts, fmt.Sprintf("%s=%s", k, v))
 		}
-		parts = append(parts, fmt.Sprintf("context: %s", strings.Join(contextParts, ", ")))
+		parts = append(parts, "context: "+strings.Join(contextParts, ", "))
 	}
 	
 	return strings.Join(parts, "; ")
 }
 
-// Unwrap returns the underlying error for error wrapping
+// Unwrap returns the underlying error for error wrapping.
 func (e *ChartError) Unwrap() error {
 	return e.Underlying
 }
@@ -70,48 +113,6 @@ func (e *ChartError) Is(target error) bool {
 		return e.Type == chartErr.Type && e.Operation == chartErr.Operation
 	}
 	return false
-}
-
-// NewValidationError creates a new validation error
-func NewValidationError(operation, message string) *ChartError {
-	return &ChartError{
-		Type:      ValidationError,
-		Operation: operation,
-		Message:   message,
-		Context:   make(map[string]string),
-	}
-}
-
-// NewFileSystemError creates a new file system error
-func NewFileSystemError(operation, message string, underlying error) *ChartError {
-	return &ChartError{
-		Type:       FileSystemError,
-		Operation:  operation,
-		Message:    message,
-		Underlying: underlying,
-		Context:    make(map[string]string),
-	}
-}
-
-// NewTemplateError creates a new template error
-func NewTemplateError(operation, message string, underlying error) *ChartError {
-	return &ChartError{
-		Type:       TemplateError,
-		Operation:  operation,
-		Message:    message,
-		Underlying: underlying,
-		Context:    make(map[string]string),
-	}
-}
-
-// NewConfigurationError creates a new configuration error
-func NewConfigurationError(operation, message string) *ChartError {
-	return &ChartError{
-		Type:      ConfigurationError,
-		Operation: operation,
-		Message:   message,
-		Context:   make(map[string]string),
-	}
 }
 
 // WithContext adds context to an error

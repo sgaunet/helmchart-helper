@@ -1,9 +1,11 @@
+// Package mocks provides mock implementations for testing.
 package mocks
 
 import (
 	"bytes"
 	"embed"
 	"errors"
+	"fmt"
 	"io/fs"
 	"path/filepath"
 	"strings"
@@ -13,13 +15,19 @@ import (
 	"github.com/sgaunet/helmchart-helper/pkg/interfaces"
 )
 
-// MockFileSystem implements FileSystem interface for testing
+var (
+	// ErrFileNotFound is returned when a file is not found in the mock filesystem.
+	ErrFileNotFound = errors.New("file not found")
+)
+
+// MockFileSystem implements FileSystem interface for testing.
 type MockFileSystem struct {
 	Files       map[string][]byte
 	Directories map[string]bool
 	Errors      map[string]error
 }
 
+// NewMockFileSystem creates a new mock file system for testing.
 func NewMockFileSystem() *MockFileSystem {
 	return &MockFileSystem{
 		Files:       make(map[string][]byte),
@@ -28,7 +36,8 @@ func NewMockFileSystem() *MockFileSystem {
 	}
 }
 
-func (mfs *MockFileSystem) MkdirAll(path string, perm fs.FileMode) error {
+// MkdirAll simulates creating directories in the mock filesystem
+func (mfs *MockFileSystem) MkdirAll(path string, _ fs.FileMode) error {
 	if err, exists := mfs.Errors["MkdirAll:"+path]; exists {
 		return err
 	}
@@ -36,6 +45,7 @@ func (mfs *MockFileSystem) MkdirAll(path string, perm fs.FileMode) error {
 	return nil
 }
 
+// Create simulates creating a file in the mock filesystem
 func (mfs *MockFileSystem) Create(name string) (interfaces.File, error) {
 	if err, exists := mfs.Errors["Create:"+name]; exists {
 		return nil, err
@@ -43,7 +53,8 @@ func (mfs *MockFileSystem) Create(name string) (interfaces.File, error) {
 	return &MockFile{name: name, fs: mfs}, nil
 }
 
-func (mfs *MockFileSystem) WriteFile(name string, data []byte, perm fs.FileMode) error {
+// WriteFile simulates writing to a file in the mock filesystem
+func (mfs *MockFileSystem) WriteFile(name string, data []byte, _ fs.FileMode) error {
 	if err, exists := mfs.Errors["WriteFile:"+name]; exists {
 		return err
 	}
@@ -51,6 +62,7 @@ func (mfs *MockFileSystem) WriteFile(name string, data []byte, perm fs.FileMode)
 	return nil
 }
 
+// ReadFile simulates reading a file from the mock filesystem
 func (mfs *MockFileSystem) ReadFile(name string) ([]byte, error) {
 	if err, exists := mfs.Errors["ReadFile:"+name]; exists {
 		return nil, err
@@ -58,16 +70,18 @@ func (mfs *MockFileSystem) ReadFile(name string) ([]byte, error) {
 	if data, exists := mfs.Files[name]; exists {
 		return data, nil
 	}
-	return nil, errors.New("file not found")
+	return nil, ErrFileNotFound
 }
 
-func (mfs *MockFileSystem) OpenFile(name string, flag int, perm fs.FileMode) (interfaces.File, error) {
+// OpenFile simulates opening a file in the mock filesystem
+func (mfs *MockFileSystem) OpenFile(name string, _ int, _ fs.FileMode) (interfaces.File, error) {
 	if err, exists := mfs.Errors["OpenFile:"+name]; exists {
 		return nil, err
 	}
 	return &MockFile{name: name, fs: mfs}, nil
 }
 
+// Walk simulates walking the directory tree in the mock filesystem
 func (mfs *MockFileSystem) Walk(root string, fn filepath.WalkFunc) error {
 	if err, exists := mfs.Errors["Walk:"+root]; exists {
 		return err
@@ -91,14 +105,25 @@ type MockFile struct {
 	buf  bytes.Buffer
 }
 
+// Write simulates writing bytes to the mock file
 func (mf *MockFile) Write(p []byte) (int, error) {
-	return mf.buf.Write(p)
+	n, err := mf.buf.Write(p)
+	if err != nil {
+		return n, fmt.Errorf("mock file write failed: %w", err)
+	}
+	return n, nil
 }
 
+// WriteString simulates writing a string to the mock file
 func (mf *MockFile) WriteString(s string) (int, error) {
-	return mf.buf.WriteString(s)
+	n, err := mf.buf.WriteString(s)
+	if err != nil {
+		return n, fmt.Errorf("mock file write string failed: %w", err)
+	}
+	return n, nil
 }
 
+// Close simulates closing the mock file
 func (mf *MockFile) Close() error {
 	mf.fs.Files[mf.name] = mf.buf.Bytes()
 	return nil
@@ -110,11 +135,17 @@ type MockFileInfo struct {
 	isDir bool
 }
 
+// Name returns the name of the mock file
 func (mfi *MockFileInfo) Name() string       { return mfi.name }
+// Size returns the size of the mock file
 func (mfi *MockFileInfo) Size() int64        { return 0 }
+// Mode returns the file mode of the mock file
 func (mfi *MockFileInfo) Mode() fs.FileMode  { return 0 }
+// ModTime returns the modification time of the mock file
 func (mfi *MockFileInfo) ModTime() time.Time { return time.Time{} }
+// IsDir returns whether the mock file is a directory
 func (mfi *MockFileInfo) IsDir() bool        { return mfi.isDir }
+// Sys returns the underlying system interface (always nil for mocks)
 func (mfi *MockFileInfo) Sys() interface{}   { return nil }
 
 // MockTemplateProcessor implements TemplateProcessor interface for testing
@@ -123,6 +154,7 @@ type MockTemplateProcessor struct {
 	Errors    map[string]error
 }
 
+// NewMockTemplateProcessor creates a new mock template processor for testing
 func NewMockTemplateProcessor() *MockTemplateProcessor {
 	return &MockTemplateProcessor{
 		Templates: make(map[string]string),
@@ -130,17 +162,27 @@ func NewMockTemplateProcessor() *MockTemplateProcessor {
 	}
 }
 
-func (mtp *MockTemplateProcessor) ParseFS(fs embed.FS, pattern string) (*template.Template, error) {
+// ParseFS simulates parsing templates from an embedded filesystem
+func (mtp *MockTemplateProcessor) ParseFS(_ embed.FS, pattern string) (*template.Template, error) {
 	if err, exists := mtp.Errors["ParseFS:"+pattern]; exists {
 		return nil, err
 	}
 	if tmplStr, exists := mtp.Templates[pattern]; exists {
-		return template.New("test").Parse(tmplStr)
+		tmpl, err := template.New("test").Parse(tmplStr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse test template: %w", err)
+		}
+		return tmpl, nil
 	}
-	return template.New("test").Parse("{{.ChartName}}")
+	tmpl, err := template.New("test").Parse("{{.ChartName}}")
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse default template: %w", err)
+	}
+	return tmpl, nil
 }
 
-func (mtp *MockTemplateProcessor) ReadFile(fs embed.FS, name string) ([]byte, error) {
+// ReadFile simulates reading a file from an embedded filesystem
+func (mtp *MockTemplateProcessor) ReadFile(_ embed.FS, name string) ([]byte, error) {
 	if err, exists := mtp.Errors["ReadFile:"+name]; exists {
 		return nil, err
 	}
@@ -150,6 +192,7 @@ func (mtp *MockTemplateProcessor) ReadFile(fs embed.FS, name string) ([]byte, er
 	return []byte("mock content"), nil
 }
 
+// Execute simulates executing a template with data
 func (mtp *MockTemplateProcessor) Execute(tmpl *template.Template, data interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	err := tmpl.Execute(&buf, data)
@@ -164,6 +207,7 @@ type MockPathManager struct {
 	CleanFunc     func(path string) string
 }
 
+// NewMockPathManager creates a new mock path manager for testing
 func NewMockPathManager() *MockPathManager {
 	return &MockPathManager{
 		JoinFunc:      func(elem ...string) string { return strings.Join(elem, "/") },
@@ -173,18 +217,22 @@ func NewMockPathManager() *MockPathManager {
 	}
 }
 
+// Join simulates joining path elements
 func (mpm *MockPathManager) Join(elem ...string) string {
 	return mpm.JoinFunc(elem...)
 }
 
+// Separator returns the mock path separator
 func (mpm *MockPathManager) Separator() string {
 	return mpm.SeparatorFunc()
 }
 
+// IsAbs simulates checking if a path is absolute
 func (mpm *MockPathManager) IsAbs(path string) bool {
 	return mpm.IsAbsFunc(path)
 }
 
+// Clean simulates cleaning a path
 func (mpm *MockPathManager) Clean(path string) string {
 	return mpm.CleanFunc(path)
 }

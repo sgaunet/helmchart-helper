@@ -1,3 +1,4 @@
+// Package cli provides command line interface configuration for the Helm chart helper.
 package cli
 
 import (
@@ -53,9 +54,8 @@ func ParseFlagsFromArgs(args []string) (*Config, error) {
 	flagSet.BoolVar(&config.Version, "version", false, "Print version")
 	flagSet.BoolVar(&config.Help, "help", false, "Print help")
 	
-	err := flagSet.Parse(args)
-	if err != nil {
-		return nil, err
+	if err := flagSet.Parse(args); err != nil {
+		return nil, fmt.Errorf("failed to parse flags: %w", err)
 	}
 	
 	return config, nil

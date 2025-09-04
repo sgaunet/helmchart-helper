@@ -1,3 +1,4 @@
+// Package app provides the core functionality for generating Helm charts.
 package app
 
 import (
@@ -13,7 +14,7 @@ import (
 //go:embed chartTemplate
 var chartTemplate embed.FS
 
-// GetChartTemplate returns the embedded chart template filesystem
+// GetChartTemplate returns the embedded chart template filesystem.
 func GetChartTemplate() embed.FS {
 	return chartTemplate
 }
@@ -35,6 +36,7 @@ type options struct {
 	// sts bool
 }
 
+// App manages Helm chart generation with configurable options.
 type App struct {
 	chartPath         string
 	opts              options
@@ -44,6 +46,7 @@ type App struct {
 	chartTemplateFS   embed.FS
 }
 
+// NewApp creates a new application instance for generating Helm charts.
 func NewApp(chartName string, chartPath string, fs interfaces.FileSystem, templateProcessor interfaces.TemplateProcessor, pathManager interfaces.PathManager, chartTemplateFS embed.FS) *App {
 	return &App{
 		chartPath:         chartPath,
@@ -57,47 +60,57 @@ func NewApp(chartName string, chartPath string, fs interfaces.FileSystem, templa
 	}
 }
 
+// SetDeployment enables or disables Deployment resource generation
 func (a *App) SetDeployment(v bool) {
 	a.opts.Deployment = v
 }
 
+// SetCronjob enables or disables CronJob resource generation
 func (a *App) SetCronjob(v bool) {
 	a.opts.Cronjob = v
 }
 
+// SetDaemonSet enables or disables DaemonSet resource generation
 func (a *App) SetDaemonSet(v bool) {
 	a.opts.DaemonSet = v
 }
 
+// SetConfigmap enables or disables ConfigMap resource generation
 func (a *App) SetConfigmap(v bool) {
 	a.opts.Configmap = v
 }
 
+// SetService enables or disables Service resource generation
 func (a *App) SetService(v bool) {
 	a.opts.Service = v
 }
 
+// SetIngress enables or disables Ingress resource generation
 func (a *App) SetIngress(v bool) {
 	a.opts.Ingress = v
-
 }
 
+// SetVolumes enables or disables Volumes resource generation
 func (a *App) SetVolumes(v bool) {
 	a.opts.Volumes = v
 }
 
+// SetHpa enables or disables HorizontalPodAutoscaler resource generation
 func (a *App) SetHpa(v bool) {
 	a.opts.Hpa = v
 }
 
+// SetServiceAccount enables or disables ServiceAccount resource generation
 func (a *App) SetServiceAccount(v bool) {
 	a.opts.ServiceAccount = v
 }
 
+// SetStatefulSet enables or disables StatefulSet resource generation
 func (a *App) SetStatefulSet(v bool) {
 	a.opts.StatefulSet = v
 }
 
+// GenerateChart generates the complete Helm chart with all configured resources
 func (a *App) GenerateChart() error {
 	if err := a.createDirectoryStructure(); err != nil {
 		return err
@@ -125,7 +138,8 @@ func (a *App) GenerateChart() error {
 func (a *App) createDirectoryStructure() error {
 	// create directories
 	templatesDir := a.chartPath + a.pathManager.Separator() + "templates"
-	err := a.fs.MkdirAll(templatesDir, 0755)
+	const dirPerm = 0755
+	err := a.fs.MkdirAll(templatesDir, dirPerm)
 	if err != nil {
 		return errors.NewFileSystemError("create-directory", "failed to create templates directory", err).
 			WithChart(a.opts.ChartName).
@@ -134,7 +148,7 @@ func (a *App) createDirectoryStructure() error {
 	
 	if a.opts.Service {
 		testsDir := a.chartPath + a.pathManager.Separator() + "templates/tests"
-		err = a.fs.MkdirAll(testsDir, 0755)
+		err = a.fs.MkdirAll(testsDir, dirPerm)
 		if err != nil {
 			return errors.NewFileSystemError("create-directory", "failed to create tests directory", err).
 				WithChart(a.opts.ChartName).
@@ -174,60 +188,33 @@ func (a *App) generateBasicFiles() error {
 }
 
 func (a *App) generateConditionalFiles() error {
-	if a.opts.Cronjob {
-		err := a.createFileFromTemplate("chartTemplate/templates/cronjob.yaml", a.chartPath+a.pathManager.Separator()+"templates/cronjob.yaml")
-		if err != nil {
-			return err
+	type resourceMapping struct {
+		enabled bool
+		template string
+		outputFile string
+	}
+	
+	templatesPath := a.chartPath + a.pathManager.Separator() + "templates/"
+	resources := []resourceMapping{
+		{a.opts.Cronjob, "chartTemplate/templates/cronjob.yaml", templatesPath + "cronjob.yaml"},
+		{a.opts.Deployment, "chartTemplate/templates/deployment.yaml", templatesPath + "deployment.yaml"},
+		{a.opts.DaemonSet, "chartTemplate/templates/daemonset.yaml", templatesPath + "daemonset.yaml"},
+		{a.opts.Service, "chartTemplate/templates/service.yaml", templatesPath + "service.yaml"},
+		{a.opts.Ingress, "chartTemplate/templates/ingress.yaml", templatesPath + "ingress.yaml"},
+		{a.opts.Configmap, "chartTemplate/templates/configmap.yaml", templatesPath + "configmap.yaml"},
+		{a.opts.ServiceAccount, "chartTemplate/templates/serviceaccount.yaml", templatesPath + "serviceaccount.yaml"},
+		{a.opts.StatefulSet, "chartTemplate/templates/statefulset.yaml", templatesPath + "statefulset.yaml"},
+		{a.opts.Hpa, "chartTemplate/templates/hpa.yaml", templatesPath + "hpa.yaml"},
+	}
+	
+	for _, resource := range resources {
+		if resource.enabled {
+			if err := a.createFileFromTemplate(resource.template, resource.outputFile); err != nil {
+				return err
+			}
 		}
 	}
-	if a.opts.Deployment {
-		err := a.createFileFromTemplate("chartTemplate/templates/deployment.yaml", a.chartPath+a.pathManager.Separator()+"templates/deployment.yaml")
-		if err != nil {
-			return err
-		}
-	}
-	if a.opts.DaemonSet {
-		err := a.createFileFromTemplate("chartTemplate/templates/daemonset.yaml", a.chartPath+a.pathManager.Separator()+"templates/daemonset.yaml")
-		if err != nil {
-			return err
-		}
-	}
-	if a.opts.Service {
-		err := a.createFileFromTemplate("chartTemplate/templates/service.yaml", a.chartPath+a.pathManager.Separator()+"templates/service.yaml")
-		if err != nil {
-			return err
-		}
-	}
-	if a.opts.Ingress {
-		err := a.createFileFromTemplate("chartTemplate/templates/ingress.yaml", a.chartPath+a.pathManager.Separator()+"templates/ingress.yaml")
-		if err != nil {
-			return err
-		}
-	}
-	if a.opts.Configmap {
-		err := a.createFileFromTemplate("chartTemplate/templates/configmap.yaml", a.chartPath+a.pathManager.Separator()+"templates/configmap.yaml")
-		if err != nil {
-			return err
-		}
-	}
-	if a.opts.ServiceAccount {
-		err := a.createFileFromTemplate("chartTemplate/templates/serviceaccount.yaml", a.chartPath+a.pathManager.Separator()+"templates/serviceaccount.yaml")
-		if err != nil {
-			return err
-		}
-	}
-	if a.opts.StatefulSet {
-		err := a.createFileFromTemplate("chartTemplate/templates/statefulset.yaml", a.chartPath+a.pathManager.Separator()+"templates/statefulset.yaml")
-		if err != nil {
-			return err
-		}
-	}
-	if a.opts.Hpa {
-		err := a.createFileFromTemplate("chartTemplate/templates/hpa.yaml", a.chartPath+a.pathManager.Separator()+"templates/hpa.yaml")
-		if err != nil {
-			return err
-		}
-	}
+	
 	return nil
 }
 
@@ -268,7 +255,9 @@ func (a *App) createFileFromTemplate(templatePath string, outputPath string) err
 			WithFile(outputPath).
 			WithContext("template", templatePath)
 	}
-	defer outputFile.Close()
+	defer func() {
+		_ = outputFile.Close()
+	}()
 
 	tmpl, err := a.templateProcessor.ParseFS(a.chartTemplateFS, templatePath)
 	if err != nil {
@@ -291,27 +280,31 @@ func (a *App) copyFileFromTemplate(templatePath string, outputPath string) error
 	// copy file templatePath to outputFile from chartTemplate FS
 	content, err := a.templateProcessor.ReadFile(a.chartTemplateFS, templatePath)
 	if err != nil {
-		fmt.Println("Error opening template:", err)
-		return err
+		return fmt.Errorf("error opening template %s: %w", templatePath, err)
 	}
-	err = a.fs.WriteFile(outputPath, content, 0644)
-	return err
+	const filePerm = 0644
+	if err = a.fs.WriteFile(outputPath, content, filePerm); err != nil {
+		return fmt.Errorf("failed to write file: %w", err)
+	}
+	return nil
 }
 
 func (a *App) appendToFile(templatePath string, outputPath string) error {
 	content, err := a.templateProcessor.ReadFile(a.chartTemplateFS, templatePath)
 	if err != nil {
-		fmt.Println("Error opening template:", err)
-		return err
+		return fmt.Errorf("error opening template %s: %w", templatePath, err)
 	}
 
-	f, err := a.fs.OpenFile(outputPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	const filePerm = 0644
+	f, err := a.fs.OpenFile(outputPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, filePerm)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open file for append: %w", err)
 	}
-	defer f.Close()
+	defer func() {
+		_ = f.Close()
+	}()
 	if _, err := f.WriteString(string(content)); err != nil {
-		return err
+		return fmt.Errorf("failed to write to file: %w", err)
 	}
 	return nil
 }
@@ -330,12 +323,17 @@ func (a *App) replaceExampleInAllFiles(path string) error {
 		}
 		read, err := a.fs.ReadFile(p)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to read file %s: %w", p, err)
 		}
 		// fmt.Println(path)
-		newContents := strings.Replace(string(read), "exemple", a.opts.ChartName, -1)
-		err = a.fs.WriteFile(p, []byte(newContents), 0)
-		return err
+		newContents := strings.ReplaceAll(string(read), "example", a.opts.ChartName)
+		if err = a.fs.WriteFile(p, []byte(newContents), 0); err != nil {
+			return fmt.Errorf("failed to write file %s: %w", p, err)
+		}
+		return nil
 	})
-	return err
+	if err != nil {
+		return fmt.Errorf("failed to walk directory: %w", err)
+	}
+	return nil
 }
