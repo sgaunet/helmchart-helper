@@ -167,7 +167,7 @@ func (a *App) GenerateChart() error {
 
 func (a *App) createDirectoryStructure() error {
 	// create directories
-	templatesDir := a.chartPath + a.pathManager.Separator() + "templates"
+	templatesDir := a.pathManager.Join(a.chartPath, "templates")
 	const dirPerm = 0755
 	err := a.fs.MkdirAll(templatesDir, dirPerm)
 	if err != nil {
@@ -177,7 +177,7 @@ func (a *App) createDirectoryStructure() error {
 	}
 	
 	if a.opts.Service {
-		testsDir := a.chartPath + a.pathManager.Separator() + "templates/tests"
+		testsDir := a.pathManager.Join(a.chartPath, "templates", "tests")
 		err = a.fs.MkdirAll(testsDir, dirPerm)
 		if err != nil {
 			return errors.NewFileSystemError("create-directory", "failed to create tests directory", err).
@@ -185,7 +185,7 @@ func (a *App) createDirectoryStructure() error {
 				WithFile(testsDir)
 		}
 		
-		testFile := a.chartPath + a.pathManager.Separator() + "templates/tests/test-connection.yaml"
+		testFile := a.pathManager.Join(a.chartPath, "templates", "tests", "test-connection.yaml")
 		err = a.createFileFromTemplate("chartTemplate/templates/tests/test-connection.yaml", testFile)
 		if err != nil {
 			return errors.WrapError(err, errors.TemplateError, "create-test-file", "failed to create test connection file").
@@ -198,19 +198,19 @@ func (a *App) createDirectoryStructure() error {
 
 func (a *App) generateBasicFiles() error {
 	// create files
-	err := a.copyFileFromTemplate("chartTemplate/templates/helpers.tpl", a.chartPath+a.pathManager.Separator()+"templates/_helpers.tpl")
+	err := a.copyFileFromTemplate("chartTemplate/templates/helpers.tpl", a.pathManager.Join(a.chartPath, "templates", "_helpers.tpl"))
 	if err != nil {
 		return err
 	}
-	err = a.copyFileFromTemplate("chartTemplate/helmignore", a.chartPath+a.pathManager.Separator()+".helmignore")
+	err = a.copyFileFromTemplate("chartTemplate/helmignore", a.pathManager.Join(a.chartPath, ".helmignore"))
 	if err != nil {
 		return err
 	}
-	err = a.createFileFromTemplate("chartTemplate/Chart.yaml", a.chartPath+a.pathManager.Separator()+"Chart.yaml")
+	err = a.createFileFromTemplate("chartTemplate/Chart.yaml", a.pathManager.Join(a.chartPath, "Chart.yaml"))
 	if err != nil {
 		return err
 	}
-	err = a.createFileFromTemplate("chartTemplate/values.yaml", a.chartPath+a.pathManager.Separator()+"values.yaml")
+	err = a.createFileFromTemplate("chartTemplate/values.yaml", a.pathManager.Join(a.chartPath, "values.yaml"))
 	if err != nil {
 		return err
 	}
@@ -224,18 +224,17 @@ func (a *App) generateConditionalFiles() error {
 		outputFile string
 	}
 	
-	templatesPath := a.chartPath + a.pathManager.Separator() + "templates/"
 	resources := []resourceMapping{
-		{a.opts.Cronjob, "chartTemplate/templates/cronjob.yaml", templatesPath + "cronjob.yaml"},
-		{a.opts.Deployment, "chartTemplate/templates/deployment.yaml", templatesPath + "deployment.yaml"},
-		{a.opts.DaemonSet, "chartTemplate/templates/daemonset.yaml", templatesPath + "daemonset.yaml"},
-		{a.opts.Service, "chartTemplate/templates/service.yaml", templatesPath + "service.yaml"},
-		{a.opts.Ingress, "chartTemplate/templates/ingress.yaml", templatesPath + "ingress.yaml"},
-		{a.opts.Configmap, "chartTemplate/templates/configmap.yaml", templatesPath + "configmap.yaml"},
-		{a.opts.ServiceAccount, "chartTemplate/templates/serviceaccount.yaml", templatesPath + "serviceaccount.yaml"},
-		{a.opts.StatefulSet, "chartTemplate/templates/statefulset.yaml", templatesPath + "statefulset.yaml"},
-		{a.opts.Hpa, "chartTemplate/templates/hpa.yaml", templatesPath + "hpa.yaml"},
-		{a.opts.Volumes, "chartTemplate/templates/pvc.yaml", templatesPath + "pvc.yaml"},
+		{a.opts.Cronjob, "chartTemplate/templates/cronjob.yaml", a.pathManager.Join(a.chartPath, "templates", "cronjob.yaml")},
+		{a.opts.Deployment, "chartTemplate/templates/deployment.yaml", a.pathManager.Join(a.chartPath, "templates", "deployment.yaml")},
+		{a.opts.DaemonSet, "chartTemplate/templates/daemonset.yaml", a.pathManager.Join(a.chartPath, "templates", "daemonset.yaml")},
+		{a.opts.Service, "chartTemplate/templates/service.yaml", a.pathManager.Join(a.chartPath, "templates", "service.yaml")},
+		{a.opts.Ingress, "chartTemplate/templates/ingress.yaml", a.pathManager.Join(a.chartPath, "templates", "ingress.yaml")},
+		{a.opts.Configmap, "chartTemplate/templates/configmap.yaml", a.pathManager.Join(a.chartPath, "templates", "configmap.yaml")},
+		{a.opts.ServiceAccount, "chartTemplate/templates/serviceaccount.yaml", a.pathManager.Join(a.chartPath, "templates", "serviceaccount.yaml")},
+		{a.opts.StatefulSet, "chartTemplate/templates/statefulset.yaml", a.pathManager.Join(a.chartPath, "templates", "statefulset.yaml")},
+		{a.opts.Hpa, "chartTemplate/templates/hpa.yaml", a.pathManager.Join(a.chartPath, "templates", "hpa.yaml")},
+		{a.opts.Volumes, "chartTemplate/templates/pvc.yaml", a.pathManager.Join(a.chartPath, "templates", "pvc.yaml")},
 	}
 	
 	for _, resource := range resources {
@@ -250,22 +249,23 @@ func (a *App) generateConditionalFiles() error {
 }
 
 func (a *App) generateNotesFiles() error {
-	err := a.createFileFromTemplate("chartTemplate/templates/NOTES-objects-created.txt", a.chartPath+a.pathManager.Separator()+"templates/NOTES.txt")
+	notesPath := a.pathManager.Join(a.chartPath, "templates", "NOTES.txt")
+	err := a.createFileFromTemplate("chartTemplate/templates/NOTES-objects-created.txt", notesPath)
 	if err != nil {
 		return err
 	}
-	err = a.appendToFile("chartTemplate/templates/NOTES-DEFAULT.txt", a.chartPath+a.pathManager.Separator()+"templates/NOTES.txt")
+	err = a.appendToFile("chartTemplate/templates/NOTES-DEFAULT.txt", notesPath)
 	if err != nil {
 		return err
 	}
 	if a.opts.Ingress {
-		err = a.appendToFile("chartTemplate/templates/NOTES-INGRESS.txt", a.chartPath+a.pathManager.Separator()+"templates/NOTES.txt")
+		err = a.appendToFile("chartTemplate/templates/NOTES-INGRESS.txt", notesPath)
 		if err != nil {
 			return err
 		}
 	}
 	if a.opts.Service {
-		err = a.appendToFile("chartTemplate/templates/NOTES-SERVICE.txt", a.chartPath+a.pathManager.Separator()+"templates/NOTES.txt")
+		err = a.appendToFile("chartTemplate/templates/NOTES-SERVICE.txt", notesPath)
 		if err != nil {
 			return err
 		}
