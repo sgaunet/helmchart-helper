@@ -34,7 +34,6 @@ package app
 
 import (
 	"embed"
-	"fmt"
 	"os"
 	"strings"
 
@@ -312,11 +311,16 @@ func (a *App) copyFileFromTemplate(templatePath string, outputPath string) error
 	// copy file templatePath to outputFile from chartTemplate FS
 	content, err := a.templateProcessor.ReadFile(a.chartTemplateFS, templatePath)
 	if err != nil {
-		return fmt.Errorf("error opening template %s: %w", templatePath, err)
+		return errors.NewTemplateError("read-template", "failed to read template file", err).
+			WithChart(a.opts.ChartName).
+			WithFile(templatePath)
 	}
 	const filePerm = 0644
 	if err = a.fs.WriteFile(outputPath, content, filePerm); err != nil {
-		return fmt.Errorf("failed to write file: %w", err)
+		return errors.NewFileSystemError("write-file", "failed to write output file", err).
+			WithChart(a.opts.ChartName).
+			WithFile(outputPath).
+			WithContext("template", templatePath)
 	}
 	return nil
 }
@@ -324,19 +328,25 @@ func (a *App) copyFileFromTemplate(templatePath string, outputPath string) error
 func (a *App) appendToFile(templatePath string, outputPath string) error {
 	content, err := a.templateProcessor.ReadFile(a.chartTemplateFS, templatePath)
 	if err != nil {
-		return fmt.Errorf("error opening template %s: %w", templatePath, err)
+		return errors.NewTemplateError("read-template", "failed to read template file", err).
+			WithChart(a.opts.ChartName).
+			WithFile(templatePath)
 	}
 
 	const filePerm = 0644
 	f, err := a.fs.OpenFile(outputPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, filePerm)
 	if err != nil {
-		return fmt.Errorf("failed to open file for append: %w", err)
+		return errors.NewFileSystemError("append-file", "failed to open file for append", err).
+			WithChart(a.opts.ChartName).
+			WithFile(outputPath)
 	}
 	defer func() {
 		_ = f.Close()
 	}()
 	if _, err := f.WriteString(string(content)); err != nil {
-		return fmt.Errorf("failed to write to file: %w", err)
+		return errors.NewFileSystemError("append-file", "failed to write to file", err).
+			WithChart(a.opts.ChartName).
+			WithFile(outputPath)
 	}
 	return nil
 }
@@ -361,17 +371,23 @@ func (a *App) replaceExampleInAllFiles(path string) error {
 		}
 		read, err := a.fs.ReadFile(p)
 		if err != nil {
-			return fmt.Errorf("failed to read file %s: %w", p, err)
+			return errors.NewFileSystemError("replace-placeholder", "failed to read file", err).
+				WithChart(a.opts.ChartName).
+				WithFile(p)
 		}
 		newContents := strings.ReplaceAll(string(read), "example", a.opts.ChartName)
 		const filePerm = 0644
 		if err = a.fs.WriteFile(p, []byte(newContents), filePerm); err != nil {
-			return fmt.Errorf("failed to write file %s: %w", p, err)
+			return errors.NewFileSystemError("replace-placeholder", "failed to write file", err).
+				WithChart(a.opts.ChartName).
+				WithFile(p)
 		}
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("failed to walk directory: %w", err)
+		return errors.NewFileSystemError("replace-placeholder", "failed to walk directory", err).
+			WithChart(a.opts.ChartName).
+			WithFile(path)
 	}
 	return nil
 }
