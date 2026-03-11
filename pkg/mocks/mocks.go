@@ -34,17 +34,19 @@ var (
 
 // MockFileSystem implements FileSystem interface for testing.
 type MockFileSystem struct {
-	Files       map[string][]byte
-	Directories map[string]bool
-	Errors      map[string]error
+	Files            map[string][]byte
+	Directories      map[string]bool
+	Errors           map[string]error
+	WriteStringErrors map[string]error
 }
 
 // NewMockFileSystem creates a new mock file system for testing.
 func NewMockFileSystem() *MockFileSystem {
 	return &MockFileSystem{
-		Files:       make(map[string][]byte),
-		Directories: make(map[string]bool),
-		Errors:      make(map[string]error),
+		Files:             make(map[string][]byte),
+		Directories:       make(map[string]bool),
+		Errors:            make(map[string]error),
+		WriteStringErrors: make(map[string]error),
 	}
 }
 
@@ -128,6 +130,9 @@ func (mf *MockFile) Write(p []byte) (int, error) {
 
 // WriteString simulates writing a string to the mock file.
 func (mf *MockFile) WriteString(s string) (int, error) {
+	if err, exists := mf.fs.WriteStringErrors[mf.name]; exists {
+		return 0, err
+	}
 	n, err := mf.buf.WriteString(s)
 	if err != nil {
 		return n, fmt.Errorf("mock file write string failed: %w", err)
