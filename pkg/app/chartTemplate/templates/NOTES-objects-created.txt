@@ -26,3 +26,6 @@ Objects created:
 {{- if .ServiceAccount }}
   * serviceaccount
 {{- end }}
+{{- if .Volumes }}
+  * pvc
+{{- end }}

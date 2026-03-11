@@ -236,6 +236,7 @@ func (a *App) generateConditionalFiles() error {
 		{a.opts.ServiceAccount, "chartTemplate/templates/serviceaccount.yaml", templatesPath + "serviceaccount.yaml"},
 		{a.opts.StatefulSet, "chartTemplate/templates/statefulset.yaml", templatesPath + "statefulset.yaml"},
 		{a.opts.Hpa, "chartTemplate/templates/hpa.yaml", templatesPath + "hpa.yaml"},
+		{a.opts.Volumes, "chartTemplate/templates/pvc.yaml", templatesPath + "pvc.yaml"},
 	}
 	
 	for _, resource := range resources {
