@@ -21,6 +21,22 @@ func TestConfig_Validate(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "valid single char name",
+			config: Config{
+				ChartName: "a",
+				OutputDir: "/tmp/test",
+			},
+			wantErr: false,
+		},
+		{
+			name: "valid name with numbers",
+			config: Config{
+				ChartName: "my-app2",
+				OutputDir: "/tmp/test",
+			},
+			wantErr: false,
+		},
+		{
 			name: "missing chart name",
 			config: Config{
 				OutputDir: "/tmp/test",
@@ -41,6 +57,69 @@ func TestConfig_Validate(t *testing.T) {
 			config:      Config{},
 			wantErr:     true,
 			errContains: "chart name is required",
+		},
+		{
+			name: "uppercase in chart name",
+			config: Config{
+				ChartName: "MyChart",
+				OutputDir: "/tmp/test",
+			},
+			wantErr:     true,
+			errContains: "chart name must start with a lowercase letter",
+		},
+		{
+			name: "spaces in chart name",
+			config: Config{
+				ChartName: "my chart",
+				OutputDir: "/tmp/test",
+			},
+			wantErr:     true,
+			errContains: "chart name must start with a lowercase letter",
+		},
+		{
+			name: "starts with number",
+			config: Config{
+				ChartName: "1chart",
+				OutputDir: "/tmp/test",
+			},
+			wantErr:     true,
+			errContains: "chart name must start with a lowercase letter",
+		},
+		{
+			name: "starts with hyphen",
+			config: Config{
+				ChartName: "-chart",
+				OutputDir: "/tmp/test",
+			},
+			wantErr:     true,
+			errContains: "chart name must start with a lowercase letter",
+		},
+		{
+			name: "ends with hyphen",
+			config: Config{
+				ChartName: "chart-",
+				OutputDir: "/tmp/test",
+			},
+			wantErr:     true,
+			errContains: "chart name must start with a lowercase letter",
+		},
+		{
+			name: "path traversal attempt",
+			config: Config{
+				ChartName: "../etc/passwd",
+				OutputDir: "/tmp/test",
+			},
+			wantErr:     true,
+			errContains: "chart name must start with a lowercase letter",
+		},
+		{
+			name: "special characters",
+			config: Config{
+				ChartName: "chart_name",
+				OutputDir: "/tmp/test",
+			},
+			wantErr:     true,
+			errContains: "chart name must start with a lowercase letter",
 		},
 	}
 
