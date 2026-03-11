@@ -42,7 +42,7 @@ func ParseFlagsFromArgs(args []string) (*Config, error) {
 	
 	flagSet.BoolVar(&config.Hpa, "hpa", false, "hpa")
 	flagSet.BoolVar(&config.StatefulSet, "sts", false, "statefulset")
-	flagSet.BoolVar(&config.DaemonSet, "ds", false, "daemonse")
+	flagSet.BoolVar(&config.DaemonSet, "ds", false, "daemonset")
 	flagSet.BoolVar(&config.Cronjob, "cj", false, "cronjob")
 	flagSet.BoolVar(&config.Deployment, "deploy", false, "deployment")
 	flagSet.BoolVar(&config.Configmap, "cm", false, "configmap")
