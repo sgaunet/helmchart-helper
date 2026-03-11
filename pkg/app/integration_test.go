@@ -204,57 +204,34 @@ func TestGenerateChart_Integration(t *testing.T) {
 }
 
 func TestGenerateChart_ErrorHandling(t *testing.T) {
-	tests := []struct {
-		name          string
-		chartName     string
-		outputDir     string
-		setupError    func(string) error
-		expectedError string
-	}{
-		{
-			name:      "invalid output directory",
-			chartName: "test-chart",
-			outputDir: "/invalid/path/that/does/not/exist/and/cannot/be/created",
-			setupError: func(path string) error {
-				// Create a file at the parent path to make directory creation fail
-				return os.WriteFile("/invalid", []byte("blocking file"), 0644)
-			},
-			expectedError: "permission denied",
-		},
+	// Use a read-only temp directory to trigger real filesystem errors
+	tempDir, err := os.MkdirTemp("", "helmchart-error-test-*")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Create a file where a directory is expected to block MkdirAll
+	blockingFile := filepath.Join(tempDir, "blocked")
+	if err := os.WriteFile(blockingFile, []byte("block"), 0644); err != nil {
+		t.Fatalf("Failed to create blocking file: %v", err)
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Setup error condition if specified
-			if tt.setupError != nil {
-				defer func() {
-					// Cleanup
-					os.Remove("/invalid")
-				}()
-				if err := tt.setupError(tt.outputDir); err != nil {
-					t.Skip("Could not setup error condition:", err)
-				}
-			}
+	fs := filesystem.NewOSFileSystem()
+	templateProcessor := filesystem.NewDefaultTemplateProcessor()
+	pathManager := filesystem.NewDefaultPathManager()
 
-			// Create dependencies
-			fs := filesystem.NewOSFileSystem()
-			templateProcessor := filesystem.NewDefaultTemplateProcessor()
-			pathManager := filesystem.NewDefaultPathManager()
-			
-			// Create app
-			app := NewApp(tt.chartName, tt.outputDir, fs, templateProcessor, pathManager, GetChartTemplate())
+	// Use the blocking file as the chart path; MkdirAll will fail
+	// because "blocked/templates" can't be created under a regular file
+	app := NewApp("test-chart", blockingFile, fs, templateProcessor, pathManager, GetChartTemplate())
 
-			// Generate chart and expect error
-			err := app.GenerateChart()
-			if err == nil {
-				t.Errorf("Expected error but got none")
-				return
-			}
+	genErr := app.GenerateChart()
+	if genErr == nil {
+		t.Fatal("Expected error but got none")
+	}
 
-			if !strings.Contains(err.Error(), tt.expectedError) {
-				t.Errorf("Expected error containing '%s', got: %v", tt.expectedError, err)
-			}
-		})
+	if !strings.Contains(genErr.Error(), "create-directory") {
+		t.Errorf("Expected error about directory creation, got: %v", genErr)
 	}
 }
 
