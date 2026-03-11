@@ -50,7 +50,7 @@ Usage of helmchart-helper:
   -deploy
         deployment
   -ds
-        daemonse
+        daemonset
   -help
         Print help
   -hpa
