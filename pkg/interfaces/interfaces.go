@@ -9,7 +9,7 @@
 //   - FileSystem: Abstracts directory creation, file read/write, and directory walking
 //   - File: Abstracts individual file write and close operations
 //   - TemplateProcessor: Abstracts Go template parsing and execution from embedded filesystems
-//   - PathManager: Abstracts OS-specific path operations (join, separator, clean)
+//   - PathManager: Abstracts OS-specific path join operation
 //
 // Production implementations are in pkg/filesystem. Mock implementations are in pkg/mocks.
 package interfaces
@@ -48,7 +48,4 @@ type TemplateProcessor interface {
 // PathManager abstracts path operations.
 type PathManager interface {
 	Join(elem ...string) string
-	Separator() string
-	IsAbs(path string) bool
-	Clean(path string) string
 }

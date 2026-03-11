@@ -213,38 +213,17 @@ func (mtp *MockTemplateProcessor) Execute(tmpl *template.Template, data any) ([]
 
 // MockPathManager implements PathManager interface for testing.
 type MockPathManager struct {
-	JoinFunc      func(elem ...string) string
-	SeparatorFunc func() string
-	IsAbsFunc     func(path string) bool
-	CleanFunc     func(path string) string
+	JoinFunc func(elem ...string) string
 }
 
 // NewMockPathManager creates a new mock path manager for testing.
 func NewMockPathManager() *MockPathManager {
 	return &MockPathManager{
-		JoinFunc:      func(elem ...string) string { return strings.Join(elem, "/") },
-		SeparatorFunc: func() string { return "/" },
-		IsAbsFunc:     func(path string) bool { return strings.HasPrefix(path, "/") },
-		CleanFunc:     func(path string) string { return path },
+		JoinFunc: func(elem ...string) string { return strings.Join(elem, "/") },
 	}
 }
 
 // Join simulates joining path elements.
 func (mpm *MockPathManager) Join(elem ...string) string {
 	return mpm.JoinFunc(elem...)
-}
-
-// Separator returns the mock path separator.
-func (mpm *MockPathManager) Separator() string {
-	return mpm.SeparatorFunc()
-}
-
-// IsAbs simulates checking if a path is absolute.
-func (mpm *MockPathManager) IsAbs(path string) bool {
-	return mpm.IsAbsFunc(path)
-}
-
-// Clean simulates cleaning a path.
-func (mpm *MockPathManager) Clean(path string) string {
-	return mpm.CleanFunc(path)
 }

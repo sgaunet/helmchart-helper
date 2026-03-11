@@ -4,7 +4,7 @@
 // Implementations:
 //   - OSFileSystem: Wraps standard library os/filepath for real filesystem operations
 //   - DefaultTemplateProcessor: Wraps text/template and embed.FS for template parsing
-//   - DefaultPathManager: Wraps filepath for OS-specific path manipulation
+//   - DefaultPathManager: Wraps filepath.Join for OS-specific path joining
 //
 // All implementations add descriptive error wrapping for easier debugging.
 package filesystem
@@ -124,19 +124,4 @@ func NewDefaultPathManager() interfaces.PathManager { //nolint:ireturn // Return
 // Join joins path elements into a single path.
 func (pm *DefaultPathManager) Join(elem ...string) string {
 	return filepath.Join(elem...)
-}
-
-// Separator returns the OS-specific path separator.
-func (pm *DefaultPathManager) Separator() string {
-	return string(filepath.Separator)
-}
-
-// IsAbs reports whether the path is absolute.
-func (pm *DefaultPathManager) IsAbs(path string) bool {
-	return filepath.IsAbs(path)
-}
-
-// Clean returns the shortest path name equivalent to path.
-func (pm *DefaultPathManager) Clean(path string) string {
-	return filepath.Clean(path)
 }
