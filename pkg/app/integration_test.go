@@ -94,6 +94,7 @@ func TestGenerateChart_Integration(t *testing.T) {
 				"configmap":      true,
 				"serviceaccount": true,
 				"hpa":            true,
+				"volumes":        true,
 			},
 			expectedFiles: []string{
 				"Chart.yaml",
@@ -106,6 +107,7 @@ func TestGenerateChart_Integration(t *testing.T) {
 				"templates/configmap.yaml",
 				"templates/serviceaccount.yaml",
 				"templates/hpa.yaml",
+				"templates/pvc.yaml",
 				"templates/tests/test-connection.yaml",
 				"templates/NOTES.txt",
 			},
@@ -156,6 +158,9 @@ func TestGenerateChart_Integration(t *testing.T) {
 			}
 			if tt.options["cronjob"] {
 				app.SetCronjob(true)
+			}
+			if tt.options["volumes"] {
+				app.SetVolumes(true)
 			}
 
 			// Generate chart

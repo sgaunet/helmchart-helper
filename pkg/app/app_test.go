@@ -166,6 +166,17 @@ func TestApp_generateConditionalFiles(t *testing.T) {
 			},
 		},
 		{
+			name: "volumes file generation",
+			opts: options{
+				ChartName: "test-chart",
+				Volumes:   true,
+			},
+			wantErr: false,
+			expectedFiles: []string{
+				"test-path/templates/pvc.yaml",
+			},
+		},
+		{
 			name: "no conditional files",
 			opts: options{
 				ChartName: "test-chart",

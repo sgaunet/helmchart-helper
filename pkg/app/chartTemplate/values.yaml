@@ -107,6 +107,14 @@ additionalEnvFrom: []
 {{- if .Volumes }}
 volumes: {}
 volumeMounts: {}
+
+persistence:
+  enabled: true
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 1Gi
+  annotations: {}
 {{- end }}
 {{- if .Cronjob }}
 # -- cronjob schedule
