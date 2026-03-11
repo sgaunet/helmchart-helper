@@ -42,7 +42,7 @@ type File interface {
 type TemplateProcessor interface {
 	ParseFS(fs embed.FS, pattern string) (*template.Template, error)
 	ReadFile(fs embed.FS, name string) ([]byte, error)
-	Execute(tmpl *template.Template, data interface{}) ([]byte, error)
+	Execute(tmpl *template.Template, data any) ([]byte, error)
 }
 
 // PathManager abstracts path operations.

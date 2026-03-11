@@ -109,7 +109,7 @@ func (e *ChartError) Error() string {
 	}
 	
 	if len(e.Context) > 0 {
-		var contextParts []string
+		contextParts := make([]string, 0, len(e.Context))
 		for k, v := range e.Context {
 			contextParts = append(contextParts, fmt.Sprintf("%s=%s", k, v))
 		}

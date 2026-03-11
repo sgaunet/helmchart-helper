@@ -107,7 +107,7 @@ func (tp *DefaultTemplateProcessor) ReadFile(fs embed.FS, name string) ([]byte, 
 }
 
 // Execute applies a parsed template to the specified data object.
-func (tp *DefaultTemplateProcessor) Execute(tmpl *template.Template, data interface{}) ([]byte, error) {
+func (tp *DefaultTemplateProcessor) Execute(tmpl *template.Template, data any) ([]byte, error) {
 	var buf bytes.Buffer
 	err := tmpl.Execute(&buf, data)
 	return buf.Bytes(), err
