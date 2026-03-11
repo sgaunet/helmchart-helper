@@ -1,4 +1,16 @@
-// Package mocks provides mock implementations for testing.
+// Package mocks provides mock implementations of pkg/interfaces for unit testing.
+//
+// Mock Types:
+//   - MockFileSystem: In-memory filesystem using maps for files and directories.
+//     Supports injecting errors per operation via the Errors map (keyed as "Op:path").
+//   - MockFile: In-memory file buffer that flushes to MockFileSystem on Close.
+//   - MockTemplateProcessor: Returns configurable templates or defaults to "{{.ChartName}}".
+//   - MockPathManager: Uses configurable function fields for path operations.
+//
+// Error Injection:
+//
+//	mfs := NewMockFileSystem()
+//	mfs.Errors["Create:/path/to/file"] = errors.New("disk full")
 package mocks
 
 import (

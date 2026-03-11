@@ -1,4 +1,17 @@
-// Package interfaces defines abstractions for filesystem, template processing, and path operations.
+// Package interfaces defines abstractions for filesystem, template processing,
+// and path operations used throughout the Helm chart helper.
+//
+// These interfaces enable dependency injection in the app package, allowing
+// the core chart generation logic to be tested with mock implementations
+// (see pkg/mocks) without touching the real filesystem.
+//
+// Main Interfaces:
+//   - FileSystem: Abstracts directory creation, file read/write, and directory walking
+//   - File: Abstracts individual file write and close operations
+//   - TemplateProcessor: Abstracts Go template parsing and execution from embedded filesystems
+//   - PathManager: Abstracts OS-specific path operations (join, separator, clean)
+//
+// Production implementations are in pkg/filesystem. Mock implementations are in pkg/mocks.
 package interfaces
 
 import (

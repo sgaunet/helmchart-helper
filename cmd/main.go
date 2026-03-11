@@ -1,4 +1,13 @@
-// Package main is the entry point for the Helm chart helper CLI tool.
+// Package main is the entry point for the helmchart-helper CLI tool.
+//
+// It wires together the CLI flag parser (pkg/cli), production filesystem
+// implementations (pkg/filesystem), and the chart generator (pkg/app).
+//
+// Execution flow:
+//  1. Parse CLI flags → handle --version/--help → validate required flags
+//  2. Create production dependencies (filesystem, template processor, path manager)
+//  3. Configure the App with enabled resource types from CLI flags
+//  4. Generate the Helm chart to the specified output directory
 package main
 
 import (

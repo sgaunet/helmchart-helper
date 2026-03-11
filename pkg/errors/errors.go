@@ -1,4 +1,21 @@
 // Package errors provides structured error handling for the Helm chart helper.
+//
+// All errors are represented as ChartError, which carries:
+//   - Type: categorizes the error (validation, filesystem, template, configuration)
+//   - Operation: identifies where the error occurred (e.g., "create-directory")
+//   - Message: human-readable description
+//   - Underlying: wrapped original error for errors.Is/As chain
+//   - Context: key-value metadata (file path, chart name, flag name)
+//
+// ChartError implements error, Unwrap (for errors.Is/errors.As), and Is
+// (matching on Type + Operation). Use the builder methods WithContext,
+// WithFile, and WithChart to add context fluently.
+//
+// Error Patterns:
+//
+//	return errors.NewFileSystemError("create-directory", "failed to create dir", err).
+//	    WithChart(chartName).
+//	    WithFile(dirPath)
 package errors
 
 import (
