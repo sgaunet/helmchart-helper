@@ -350,7 +350,7 @@ func (a *App) appendToFile(templatePath string, outputPath string) error {
 //
 // It walks the directory tree using fs.Walk, skipping directories and processing
 // only regular files. Each file is read, modified in-memory, and written back
-// with a file permission of 0 (preserving existing permissions on overwrite).
+// with a file permission of 0644.
 func (a *App) replaceExampleInAllFiles(path string) error {
 	err := a.fs.Walk(path, func(p string, info os.FileInfo, erR error) error {
 		if erR != nil {
@@ -364,7 +364,8 @@ func (a *App) replaceExampleInAllFiles(path string) error {
 			return fmt.Errorf("failed to read file %s: %w", p, err)
 		}
 		newContents := strings.ReplaceAll(string(read), "example", a.opts.ChartName)
-		if err = a.fs.WriteFile(p, []byte(newContents), 0); err != nil {
+		const filePerm = 0644
+		if err = a.fs.WriteFile(p, []byte(newContents), filePerm); err != nil {
 			return fmt.Errorf("failed to write file %s: %w", p, err)
 		}
 		return nil
