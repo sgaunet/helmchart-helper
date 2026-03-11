@@ -61,9 +61,6 @@ type options struct {
 	Volumes        bool
 	Hpa            bool
 	ServiceAccount bool
-	// pdb bool
-	// secret bool
-	// sts bool
 }
 
 // App manages Helm chart generation with configurable options.
