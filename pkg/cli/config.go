@@ -3,7 +3,8 @@
 // It handles flag parsing, validation, and early-exit behaviors (--version, --help).
 //
 // Validation Constraints:
-//   - Chart name (-n) is required and must be non-empty
+//   - Chart name (-n) must follow Helm naming conventions: start with a lowercase
+//     letter, contain only lowercase letters, numbers, and hyphens, max 253 chars
 //   - Output directory (-o) is required and must be non-empty
 //   - All resource flags are optional and default to false
 //
@@ -17,9 +18,18 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
+	"strconv"
 
 	"github.com/sgaunet/helmchart-helper/pkg/errors"
 )
+
+// chartNameRegexp validates Helm chart names: must start with a lowercase letter,
+// followed by lowercase letters, numbers, or hyphens. Cannot end with a hyphen.
+var chartNameRegexp = regexp.MustCompile(`^[a-z][a-z0-9-]*[a-z0-9]$`)
+
+// maxChartNameLength is the maximum allowed chart name length (DNS subdomain limit).
+const maxChartNameLength = 253
 
 // Config holds all CLI configuration.
 type Config struct {
@@ -75,16 +85,53 @@ func ParseFlagsFromArgs(args []string) (*Config, error) {
 
 // Validate validates the configuration.
 func (c *Config) Validate() error {
-	if c.ChartName == "" {
-		return errors.NewValidationError("validate-config", "chart name is required").
-			WithContext("flag", "-n")
+	if err := validateChartName(c.ChartName); err != nil {
+		return err
 	}
-	
+
 	if c.OutputDir == "" {
 		return errors.NewValidationError("validate-config", "chart path is required").
 			WithContext("flag", "-o")
 	}
-	
+
+	return nil
+}
+
+// validateChartName validates a chart name against Helm naming conventions.
+// Names must start with a lowercase letter, contain only lowercase letters,
+// numbers, and hyphens, cannot end with a hyphen, and be at most 253 characters.
+// Single-character names (a single lowercase letter) are also valid.
+func validateChartName(name string) error {
+	if name == "" {
+		return errors.NewValidationError("validate-config", "chart name is required").
+			WithContext("flag", "-n")
+	}
+
+	if len(name) > maxChartNameLength {
+		return errors.NewValidationError("validate-config",
+			fmt.Sprintf("chart name must be at most %d characters", maxChartNameLength)).
+			WithContext("flag", "-n").
+			WithContext("length", strconv.Itoa(len(name)))
+	}
+
+	// Single lowercase letter is valid
+	if len(name) == 1 {
+		if name[0] >= 'a' && name[0] <= 'z' {
+			return nil
+		}
+		return errors.NewValidationError("validate-config",
+			"chart name must start with a lowercase letter and contain only lowercase letters, numbers, and hyphens").
+			WithContext("flag", "-n").
+			WithContext("chart", name)
+	}
+
+	if !chartNameRegexp.MatchString(name) {
+		return errors.NewValidationError("validate-config",
+			"chart name must start with a lowercase letter and contain only lowercase letters, numbers, and hyphens").
+			WithContext("flag", "-n").
+			WithContext("chart", name)
+	}
+
 	return nil
 }
 
