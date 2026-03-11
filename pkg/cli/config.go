@@ -1,4 +1,16 @@
 // Package cli provides command line interface configuration for the Helm chart helper.
+//
+// It handles flag parsing, validation, and early-exit behaviors (--version, --help).
+//
+// Validation Constraints:
+//   - Chart name (-n) is required and must be non-empty
+//   - Output directory (-o) is required and must be non-empty
+//   - All resource flags are optional and default to false
+//
+// Error Handling:
+//   - Invalid flags return a wrapped error from flag.Parse
+//   - Missing required fields return a ValidationError with flag context
+//   - Early exit flags (--version, --help) are handled before validation
 package cli
 
 import (

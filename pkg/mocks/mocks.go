@@ -1,4 +1,16 @@
-// Package mocks provides mock implementations for testing.
+// Package mocks provides mock implementations of pkg/interfaces for unit testing.
+//
+// Mock Types:
+//   - MockFileSystem: In-memory filesystem using maps for files and directories.
+//     Supports injecting errors per operation via the Errors map (keyed as "Op:path").
+//   - MockFile: In-memory file buffer that flushes to MockFileSystem on Close.
+//   - MockTemplateProcessor: Returns configurable templates or defaults to "{{.ChartName}}".
+//   - MockPathManager: Uses configurable function fields for path operations.
+//
+// Error Injection:
+//
+//	mfs := NewMockFileSystem()
+//	mfs.Errors["Create:/path/to/file"] = errors.New("disk full")
 package mocks
 
 import (
@@ -146,7 +158,7 @@ func (mfi *MockFileInfo) ModTime() time.Time { return time.Time{} }
 // IsDir returns whether the mock file is a directory.
 func (mfi *MockFileInfo) IsDir() bool        { return mfi.isDir }
 // Sys returns the underlying system interface (always nil for mocks).
-func (mfi *MockFileInfo) Sys() interface{}   { return nil }
+func (mfi *MockFileInfo) Sys() any            { return nil }
 
 // MockTemplateProcessor implements TemplateProcessor interface for testing.
 type MockTemplateProcessor struct {
@@ -193,7 +205,7 @@ func (mtp *MockTemplateProcessor) ReadFile(_ embed.FS, name string) ([]byte, err
 }
 
 // Execute simulates executing a template with data.
-func (mtp *MockTemplateProcessor) Execute(tmpl *template.Template, data interface{}) ([]byte, error) {
+func (mtp *MockTemplateProcessor) Execute(tmpl *template.Template, data any) ([]byte, error) {
 	var buf bytes.Buffer
 	err := tmpl.Execute(&buf, data)
 	return buf.Bytes(), err

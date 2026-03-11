@@ -1,4 +1,12 @@
-// Package filesystem provides concrete implementations of filesystem interfaces.
+// Package filesystem provides production implementations of the interfaces
+// defined in pkg/interfaces.
+//
+// Implementations:
+//   - OSFileSystem: Wraps standard library os/filepath for real filesystem operations
+//   - DefaultTemplateProcessor: Wraps text/template and embed.FS for template parsing
+//   - DefaultPathManager: Wraps filepath for OS-specific path manipulation
+//
+// All implementations add descriptive error wrapping for easier debugging.
 package filesystem
 
 import (
@@ -99,7 +107,7 @@ func (tp *DefaultTemplateProcessor) ReadFile(fs embed.FS, name string) ([]byte, 
 }
 
 // Execute applies a parsed template to the specified data object.
-func (tp *DefaultTemplateProcessor) Execute(tmpl *template.Template, data interface{}) ([]byte, error) {
+func (tp *DefaultTemplateProcessor) Execute(tmpl *template.Template, data any) ([]byte, error) {
 	var buf bytes.Buffer
 	err := tmpl.Execute(&buf, data)
 	return buf.Bytes(), err
