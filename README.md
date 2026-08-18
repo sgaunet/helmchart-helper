@@ -1,5 +1,4 @@
 [![GitHub release](https://img.shields.io/github/release/sgaunet/helmchart-helper.svg)](https://github.com/sgaunet/helmchart-helper/releases/latest)
-[![Go Report Card](https://goreportcard.com/badge/github.com/sgaunet/helmchart-helper)](https://goreportcard.com/report/github.com/sgaunet/helmchart-helper)
 [![Linter Status](https://github.com/sgaunet/helmchart-helper/workflows/linter/badge.svg)](https://github.com/sgaunet/helmchart-helper/actions/workflows/linter.yml)
 [![Coverage Badge Generation](https://github.com/sgaunet/helmchart-helper/workflows/Generate%20coverage%20badges/badge.svg)](https://github.com/sgaunet/helmchart-helper/actions/workflows/coverage.yml)
 [![Build Status](https://github.com/sgaunet/helmchart-helper/workflows/snapshot/badge.svg)](https://github.com/sgaunet/helmchart-helper/actions/workflows/snapshot.yml)
