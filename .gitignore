@@ -1,3 +1,4 @@
 /dist
 log
 /tests/tmp
+/govulncheck.sarif
